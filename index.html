@@ -1249,6 +1249,19 @@
   .dup-hint[hidden]{ display:none; }
   .dup-hint.shake{ animation:dupShake .4s ease; }
   @keyframes dupShake{ 20%{ transform:translateX(-4px); } 40%{ transform:translateX(4px); } 60%{ transform:translateX(-3px); } 80%{ transform:translateX(2px); } }
+  /* ---------- avatares ---------- */
+  .av-grid{ display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; max-width:340px; }
+  .av-opt{
+    aspect-ratio:1; border-radius:50%; border:2px solid rgba(255,255,255,.18); font-size:21px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 6px 14px -8px rgba(0,0,0,.6);
+    transition:transform .25s var(--spring, ease), border-color .2s ease, box-shadow .25s ease;
+  }
+  .av-opt:hover{ transform:scale(1.1); }
+  .av-opt.on{ border-color:#fff; transform:scale(1.12); box-shadow:0 0 0 4px var(--accent-soft), inset 0 1px 0 rgba(255,255,255,.4); }
+  .hint-inline{ font-weight:400; color:var(--ink-faint); font-size:11.5px; }
+  .glass-btn.acct .av-mini{ position:relative; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:14px; line-height:1; margin-left:-4px; box-shadow:inset 0 1px 0 rgba(255,255,255,.4); }
+  .glass-btn.acct .av-mini .adot{ position:absolute; right:-2px; bottom:-2px; width:9px; height:9px; border:2px solid rgba(20,22,50,.95); box-sizing:border-box; }
 </style>
 </head>
 <body>
@@ -2025,11 +2038,12 @@ service cloud.firestore {
     }
     setStatus("off");
   }
-  async function authSubmit(mode, usuarioRaw, clave, remember, chords){
+  async function authSubmit(mode, usuarioRaw, clave, remember, chords, avatar){
     const usuario = normUser(usuarioRaw);
     if(!/^[a-z0-9._-]{3,24}$/.test(usuario)) throw new Error("El usuario debe tener 3 a 24 caracteres: letras, números, punto, guion o guion bajo.");
     if((clave || "").length < 6) throw new Error("La clave debe tener al menos 6 caracteres.");
     if(mode === "create" && chords !== true && chords !== false) throw new Error("Elige si quieres ver los acordes o solo la letra.");
+    if(mode === "create" && !avById(avatar)) throw new Error("Elige tu avatar.");
     const li = lockInfo(usuario);
     if(li.until > Date.now()) throw new Error("Demasiados intentos. Espera " + Math.ceil((li.until - Date.now())/60000) + " min.");
     if(!window.crypto || !crypto.subtle) throw new Error("Este navegador/contexto no permite cifrado. Abre la página con Live Server o desde https.");
@@ -2053,7 +2067,7 @@ service cloud.firestore {
       const salU8 = crypto.getRandomValues(new Uint8Array(16));
       const bits = await kdf(clave, salU8);
       await startSession(usuario, b64e(salU8), b64e(bits.slice(0, 32)), bits.slice(32), remember);
-      meta.prefs = { chords, at: Date.now() };
+      meta.prefs = { chords, avatar, at: Date.now() };
       persist({ noSync:true });
       applyChordsPref();
     }
@@ -2726,7 +2740,7 @@ service cloud.firestore {
   }
 
   /* ---------------- cuenta (UI) ---------------- */
-  const acc = { mode:"login", busy:false, err:"", chords:null };
+  const acc = { mode:"login", busy:false, err:"", chords:null, avatar:null };
   function agoText(ts){
     const s = Math.round((Date.now() - ts)/1000);
     if(s < 10) return "ahora mismo";
@@ -2754,9 +2768,47 @@ service cloud.firestore {
     if(b){ b.classList.toggle("off", !on); b.setAttribute("aria-pressed", String(on)); b.title = on ? "Ocultar acordes" : "Mostrar acordes"; }
     const c = document.getElementById("accShowChords"); if(c) c.checked = on;
   }
+  function setPref(patch){ meta.prefs = Object.assign({}, meta.prefs, patch, { at: Date.now() }); persist(); }
+  /* ---------------- avatar (también es el favicon de la pestaña) ---------------- */
+  const AVATARS = [
+    { id:"guitarra", e:"🎸", a:"#ff7eb3", b:"#8b5cf6" }, { id:"piano",   e:"🎹", a:"#5eead4", b:"#3b82f6" },
+    { id:"micro",    e:"🎤", a:"#fbbf24", b:"#f43f5e" }, { id:"bateria", e:"🥁", a:"#fb923c", b:"#ef4444" },
+    { id:"violin",   e:"🎻", a:"#a78bfa", b:"#ec4899" }, { id:"trompeta",e:"🎺", a:"#facc15", b:"#f97316" },
+    { id:"sax",      e:"🎷", a:"#34d399", b:"#0ea5e9" }, { id:"banjo",   e:"🪕", a:"#a3e635", b:"#14b8a6" },
+    { id:"audifonos",e:"🎧", a:"#60a5fa", b:"#a855f7" }, { id:"notas",   e:"🎶", a:"#f472b6", b:"#6366f1" },
+    { id:"paloma",   e:"🕊️", a:"#bae6fd", b:"#818cf8" }, { id:"estrella",e:"⭐", a:"#fde047", b:"#fb7185" }
+  ];
+  const avById = id => AVATARS.find(x => x.id === id) || null;
+  const avGrad = a => "linear-gradient(135deg," + a.a + "," + a.b + ")";
+  function avatarsHtml(sel){
+    return '<div class="av-grid">' + AVATARS.map(a =>
+      '<button type="button" class="av-opt' + (a.id === sel ? " on" : "") + '" data-av="' + a.id + '" style="background:' + avGrad(a) + '" aria-label="Avatar ' + a.id + '">' + a.e + '</button>').join("") + '</div>';
+  }
+  let iconStash = null, iconKey = "";
+  function applyFavicon(a){
+    const key = a ? a.id : "";
+    if(key === iconKey) return;
+    iconKey = key;
+    const old = document.getElementById("dynIcon"); if(old) old.remove();
+    if(!a){
+      if(iconStash){ iconStash.forEach(l => document.head.appendChild(l)); iconStash = null; }
+      return;
+    }
+    try{
+      const c = document.createElement("canvas"); c.width = c.height = 64;
+      const x = c.getContext("2d");
+      const g = x.createLinearGradient(0, 0, 64, 64); g.addColorStop(0, a.a); g.addColorStop(1, a.b);
+      x.fillStyle = g; x.beginPath(); x.arc(32, 32, 32, 0, Math.PI * 2); x.fill();
+      x.font = "36px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+      x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(a.e, 32, 35);
+      if(!iconStash){ iconStash = [...document.querySelectorAll('link[rel="icon"]')]; iconStash.forEach(l => l.remove()); }
+      const ln = document.createElement("link"); ln.rel = "icon"; ln.type = "image/png"; ln.id = "dynIcon"; ln.href = c.toDataURL("image/png");
+      document.head.appendChild(ln);
+    }catch(e){}
+  }
+  function myAvatar(){ return cloud.user && meta.prefs ? avById(meta.prefs.avatar) : null; }
   function setChordsPref(on){
-    meta.prefs = { chords: !!on, at: Date.now() };
-    persist();
+    setPref({ chords: !!on });
     applyChordsPref();
     toast(on ? "Acordes visibles" : "Solo la letra");
   }
@@ -2764,7 +2816,10 @@ service cloud.firestore {
     const b = document.getElementById("accountBtn");
     if(!b) return;
     b.className = "glass-btn acct" + (cloud.user ? " on st-" + cloud.status : "");
-    b.innerHTML = '<span class="adot"></span><span class="al">' + (cloud.user ? escapeHtml(cloud.user) : "Iniciar sesión") + '</span>';
+    const av = myAvatar();
+    b.innerHTML = (av ? '<span class="av-mini" style="background:' + avGrad(av) + '">' + av.e + '<span class="adot"></span></span>' : '<span class="adot"></span>') +
+      '<span class="al">' + (cloud.user ? escapeHtml(cloud.user) : "Iniciar sesión") + '</span>';
+    applyFavicon(av);
     b.title = cloud.user ? statusText() : "Guarda tu cuaderno en la nube para verlo en otros dispositivos";
     const g = document.getElementById("greeting");
     if(g) g.textContent = (cloud.user && GREETING_NAMES[cloud.user]) ? "Hola, " + GREETING_NAMES[cloud.user] + " 👋" : "Hola 👋";
@@ -2775,9 +2830,10 @@ service cloud.firestore {
     const body = document.getElementById("accBody");
     if(cloud.user){
       body.innerHTML =
-        '<div class="acc-user"><div class="acc-av">' + escapeHtml(cloud.user.slice(0,1).toUpperCase()) + '</div>' +
+        '<div class="acc-user"><div class="acc-av"' + (myAvatar() ? ' style="background:' + avGrad(myAvatar()) + ';font-size:24px"' : "") + '>' + (myAvatar() ? myAvatar().e : escapeHtml(cloud.user.slice(0,1).toUpperCase())) + '</div>' +
         '<div><div class="acc-name">' + escapeHtml(cloud.user) + '</div><div class="acc-status" id="accStatus"></div></div></div>' +
         '<p class="confirm-text">Tu cuaderno (canciones, carpetas y espacios temporales) se guarda cifrado en la nube y se sincroniza solo cuando haces cambios.</p>' +
+        '<div class="field"><label>Tu avatar <span class="hint-inline">(también es el ícono de la pestaña)</span></label>' + avatarsHtml(meta.prefs && meta.prefs.avatar) + '</div>' +
         '<label class="check-inline"><input type="checkbox" id="accShowChords"' + (showChords() ? " checked" : "") + '> Mostrar acordes en las canciones</label>' +
         '<div class="acc-btns"><button class="glass-btn primary" data-acc="sync">⟳ Sincronizar ahora</button>' +
         '<button class="glass-btn" data-acc="replace">Reemplazar la nube con este dispositivo</button>' +
@@ -2793,6 +2849,8 @@ service cloud.firestore {
           '<button type="button" class="choice-opt' + (acc.chords === true ? " on" : "") + '" data-chords="1"><b>🎸 Sí, toco un instrumento</b><span>Mostrar los acordes sobre la letra</span></button>' +
           '<button type="button" class="choice-opt' + (acc.chords === false ? " on" : "") + '" data-chords="0"><b>🎤 No, solo canto</b><span>Solo la letra, más limpia y cómoda</span></button></div>' +
           '<div class="hint">Lo puedes cambiar cuando quieras con el botón 🎸 dentro de cada canción.</div></div>' : "") +
+        (acc.mode === "create" ? '<div class="field"><label>Elige tu avatar</label>' + avatarsHtml(acc.avatar) +
+          '<div class="hint">Será tu foto en Sonarium y el ícono de la pestaña del navegador.</div></div>' : "") +
         '<label class="check-inline"><input type="checkbox" id="accRemember" checked> Recordar en este dispositivo</label>' +
         '<div class="acc-err" id="accErr"></div>' +
         '<button class="glass-btn primary" id="accSubmit" style="align-self:flex-start;">' + (acc.mode === "login" ? "Entrar" : "Crear mi cuenta") + '</button>' +
@@ -2819,7 +2877,8 @@ service cloud.firestore {
     try{
       await authSubmit(acc.mode, document.getElementById("accUser").value,
                        document.getElementById("accPass").value, document.getElementById("accRemember").checked,
-                       acc.mode === "create" ? acc.chords : undefined);
+                       acc.mode === "create" ? acc.chords : undefined,
+                       acc.mode === "create" ? acc.avatar : undefined);
       acc.busy = false;
       renderAccount();
       toast(acc.mode === "login" ? "Sesión iniciada" : "Cuenta creada");
@@ -3426,6 +3485,16 @@ service cloud.firestore {
   });
   document.getElementById("chordsBtn").addEventListener("click", () => setChordsPref(!showChords()));
   document.getElementById("accBody").addEventListener("click", (e) => {
+    const av = e.target.closest("[data-av]");
+    if(av){
+      if(cloud.user){ setPref({ avatar: av.dataset.av }); renderAccount(); toast("Avatar actualizado"); }
+      else {
+        acc.avatar = av.dataset.av;
+        document.querySelectorAll(".av-opt").forEach(b => b.classList.toggle("on", b === av));
+        const er = document.getElementById("accErr"); if(er) er.textContent = "";
+      }
+      return;
+    }
     const o = e.target.closest("[data-chords]");
     if(!o) return;
     acc.chords = o.dataset.chords === "1";
