@@ -1188,7 +1188,7 @@
   /* ---------- celular en horizontal: aprovechar el ancho ---------- */
   @media (orientation:landscape) and (max-height:620px){
     .lyrics-area{ padding:26px 22px 70px; }
-    .lyrics-area #songRender{ max-width:none; column-width:calc(var(--lyric-size, 16px) * 21); column-gap:30px; column-rule:1px solid rgba(255,255,255,.08); }
+    .lyrics-area #songRender{ max-width:none; column-count:var(--cols, 1); column-width:auto; column-gap:30px; column-rule:1px solid rgba(255,255,255,.08); }
     .lyrics-area #songRender .song-line{ break-inside:avoid; }
     .topbar{ padding-top:10px; padding-bottom:8px; }
     .scrollbar-dock{ left:auto; right:16px; bottom:10px; transform:none; padding:6px 14px; gap:10px; }
@@ -2143,8 +2143,22 @@ service cloud.firestore {
     }
     return { chords, lyric };
   }
+  function splitInlineDirectives(lines){
+    const out = [], DIR = "\\{\\s*(?:soc|eoc|start_of_chorus|end_of_chorus)\\s*(?::[^}]*)?\\}";
+    const reHead = new RegExp("^\\s*(" + DIR + ")\\s*", "i"), reTail = new RegExp("\\s*(" + DIR + ")\\s*$", "i");
+    lines.forEach(l => {
+      if(/^\s*\{[^}]*\}\s*$/.test(l)){ out.push(l); return; }
+      let rest = l, m; const head = [], tail = [];
+      while((m = reHead.exec(rest))){ head.push(m[1]); rest = rest.slice(m[0].length); }
+      while((m = reTail.exec(rest))){ tail.unshift(m[1]); rest = rest.slice(0, m.index); }
+      head.forEach(x => out.push(x));
+      if(rest.trim() !== "" || !(head.length || tail.length)) out.push(rest);
+      tail.forEach(x => out.push(x));
+    });
+    return out;
+  }
   function renderSongBody(body, shift){
-    const lines = body.split("\n");
+    const lines = splitInlineDirectives(body.split("\n"));
     let html = "", inChorus = false;
     const closeChorus = () => { if(inChorus){ html += "</div>"; inChorus = false; } };
     lines.forEach(rawLine => {
@@ -3626,9 +3640,30 @@ service cloud.firestore {
 
   /* ---------------- tamaño de letra ---------------- */
   const FONT_SIZE_KEY = "cancionero.fontSize";
+  /* columnas: solo las que caben sin pisar el texto */
+  function fitColumns(){
+    const r = el.songRender; if(!r) return;
+    r.style.setProperty("--cols", "1");
+    if(!(window.matchMedia && window.matchMedia("(orientation:landscape) and (max-height:620px)").matches)) return;
+    const gap = 30, W = r.clientWidth;
+    let maxW = 0;
+    if(document.body.classList.contains("no-chords")) maxW = lyricSize * 20;
+    else {
+      r.querySelectorAll(".lyric-text").forEach(n => { maxW = Math.max(maxW, n.getBoundingClientRect().width); });
+      r.querySelectorAll(".chord-tag").forEach(n => { maxW = Math.max(maxW, n.offsetLeft + n.offsetWidth); });
+    }
+    const cols = Math.max(1, Math.min(3, Math.floor((W + gap) / (maxW + gap + 10))));
+    r.style.setProperty("--cols", String(cols));
+  }
+  let fitT = null;
+  const fitSoon = () => { clearTimeout(fitT); fitT = setTimeout(fitColumns, 30); };
+  new MutationObserver(fitSoon).observe(el.songRender, { childList:true });
+  window.addEventListener("resize", fitSoon);
+  window.addEventListener("orientationchange", fitSoon);
   let lyricSize = parseInt(localStorage.getItem(FONT_SIZE_KEY), 10) || 16;
   function applyFontSize(){
     document.documentElement.style.setProperty("--lyric-size", lyricSize + "px");
+    if(typeof fitSoon === "function") fitSoon();
     document.getElementById("fontSizeLabel").textContent = lyricSize;
   }
   document.getElementById("fontUp").addEventListener("click", () => {
