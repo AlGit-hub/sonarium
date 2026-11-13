@@ -1262,6 +1262,15 @@
   .hint-inline{ font-weight:400; color:var(--ink-faint); font-size:11.5px; }
   .glass-btn.acct .av-mini{ position:relative; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:14px; line-height:1; margin-left:-4px; box-shadow:inset 0 1px 0 rgba(255,255,255,.4); }
   .glass-btn.acct .av-mini .adot{ position:absolute; right:-2px; bottom:-2px; width:9px; height:9px; border:2px solid rgba(20,22,50,.95); box-sizing:border-box; }
+  /* ---------- coro (ChordPro: {soc} … {eoc}) ---------- */
+  .chorus{
+    position:relative; margin:8px 0 10px; padding:6px 10px 6px 14px; border-left:3px solid var(--accent);
+    background:linear-gradient(90deg, var(--accent-soft), transparent 75%); border-radius:0 12px 12px 0; break-inside:avoid;
+  }
+  .chorus .song-line{ font-weight:700; }
+  .chorus .chord-tag{ font-weight:800; }
+  .sec-label{ font-family:'Manrope',system-ui,sans-serif; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; font-weight:800; color:var(--accent); opacity:.95; margin:0 0 3px; }
+  .sec-label.solo{ margin:10px 0 2px; color:var(--ink-dim); }
 </style>
 </head>
 <body>
@@ -1418,6 +1427,8 @@
         <label>Letra con acordes</label>
         <textarea id="fieldBody" placeholder="[C]Escribe aquí la letra&#10;y coloca los acordes entre corchetes&#10;justo antes de la sílaba donde [G]van"></textarea>
         <div class="hint">Formato: escribe la letra normal y pon cada acorde entre corchetes justo antes de donde se toca, por ejemplo <em>[Am]Vamos a [F]cantar [C]juntos</em>. Deja una línea vacía para separar secciones.</div>
+        <button class="glass-btn" id="chorusBtn" type="button" style="margin-top:10px;" title="Selecciona las líneas del coro y pulsa aquí">🔆 Marcar selección como coro</button>
+        <div class="hint">El coro se ve en <strong>negrita</strong> y con una barra de color. También puedes escribirlo a mano al estilo ChordPro: una línea <code>{soc}</code> antes del coro y <code>{eoc}</code> después. Con <code>{soc: Coro final}</code> cambias la etiqueta, y <code>{c: Estrofa 1}</code> pone un título de sección.</div>
         <button class="glass-btn" id="convertBtn" type="button" style="margin-top:10px;">✨ Convertir acordes sobre la letra</button>
         <div class="hint">¿Copiaste una canción con los acordes en la línea de arriba (como en un cancionero)? Pégala aquí y pulsa el botón: coloca cada acorde entre corchetes en su lugar. Entiende C D E…, Do Re Mi… y la «-» como menor (A- = Am). También sirve si los acordes ya están entre corchetes: cambia [D-] por [Dm]. Revisa el resultado, a veces conviene ajustar la posición de algún acorde.</div>
       </div>
@@ -2134,8 +2145,24 @@ service cloud.firestore {
   }
   function renderSongBody(body, shift){
     const lines = body.split("\n");
-    let html = "";
+    let html = "", inChorus = false;
+    const closeChorus = () => { if(inChorus){ html += "</div>"; inChorus = false; } };
     lines.forEach(rawLine => {
+      /* directivas ChordPro: {soc}…{eoc} = coro, {c: texto} = etiqueta; las demás se ocultan */
+      const dm = /^\s*\{\s*([a-z_]+)\s*(?::\s*(.*?))?\s*\}\s*$/i.exec(rawLine);
+      if(dm){
+        const d = dm[1].toLowerCase(), arg = (dm[2] || "").trim();
+        if(d === "soc" || d === "start_of_chorus"){
+          closeChorus(); inChorus = true;
+          html += '<div class="chorus">' + '<div class="sec-label">' + escapeHtml(arg || "Coro") + '</div>';
+        } else if(d === "eoc" || d === "end_of_chorus"){
+          closeChorus();
+        } else if(d === "sov" || d === "start_of_verse" || d === "sob" || d === "start_of_bridge" || d === "c" || d === "comment" || d === "ci" || d === "comment_italic" || d === "cb" || d === "comment_box"){
+          const lbl = arg || (/verse/.test(d) || d === "sov" ? "Estrofa" : (/bridge/.test(d) || d === "sob" ? "Puente" : ""));
+          if(lbl) html += '<div class="sec-label solo">' + escapeHtml(lbl) + '</div>';
+        }
+        return;
+      }
       if(rawLine.trim() === ""){
         html += `<div class="song-line blank"></div>`;
         return;
@@ -2149,6 +2176,7 @@ service cloud.firestore {
       const lyricClass = lyric.trim() === "" ? "lyric-text faded" : "lyric-text";
       html += `<div class="song-line${chords.length ? "" : " nc"}">${chordHtml}<span class="${lyricClass}">${escapeHtml(lyric) || "&nbsp;"}</span></div>`;
     });
+    closeChorus();
     return html;
   }
   function escapeHtml(str){
@@ -3534,6 +3562,23 @@ service cloud.firestore {
   document.getElementById("cancelModal").addEventListener("click", closeModal);
   document.getElementById("saveModal").addEventListener("click", saveModal);
   el.fieldTitle.addEventListener("input", () => { dupAck = false; updateDupHint(); });
+  document.getElementById("chorusBtn").addEventListener("click", () => {
+    const t = el.fieldBody, v = t.value;
+    let a = t.selectionStart, b = t.selectionEnd;
+    a = v.lastIndexOf("\n", a - 1) + 1;                       /* ampliar a líneas completas */
+    let e = v.indexOf("\n", b); if(e < 0) e = v.length;
+    const block = v.slice(a, e);
+    if(!block.trim()){
+      const ins = "{soc}\n\n{eoc}";
+      t.value = v.slice(0, a) + ins + v.slice(e);
+      t.focus(); t.selectionStart = t.selectionEnd = a + 6;
+      return;
+    }
+    if(/^\s*\{\s*(soc|start_of_chorus)/i.test(block)){ toast("Esas líneas ya son un coro"); return; }
+    t.value = v.slice(0, a) + "{soc}\n" + block + "\n{eoc}" + v.slice(e);
+    t.focus(); t.selectionStart = a; t.selectionEnd = a + block.length + 12;
+    toast("Coro marcado");
+  });
   el.modalVeil.addEventListener("click", (e) => { if(e.target === el.modalVeil) closeModal(); });
 
   document.getElementById("closeConfirm").addEventListener("click", closeConfirm);
