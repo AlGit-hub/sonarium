@@ -1271,6 +1271,105 @@
   .chorus .chord-tag{ font-weight:800; }
   .sec-label{ font-family:'Manrope',system-ui,sans-serif; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; font-weight:800; color:var(--accent); opacity:.95; margin:0 0 3px; }
   .sec-label.solo{ margin:10px 0 2px; color:var(--ink-dim); }
+
+  /* =====================================================
+     v3 — encabezado compacto, barra lateral, recorrido guiado
+     ===================================================== */
+  #homeScreen{ flex-direction:row; }
+  .home-main{ flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; }
+  .home-header{ padding:16px 28px 2px; align-items:center; }
+  .home-header .greet h1{ font-size:27px; line-height:1.1; }
+  .greet-row{ margin-bottom:4px; gap:4px 14px; }
+  .home-header .greet .home-sub{ margin:0; font-size:13.5px; color:var(--ink-dim); display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center; }
+  .home-sub:empty{ display:none; }
+  .home-sub strong{ color:var(--ink); font-family:'Fraunces',serif; font-weight:600; letter-spacing:.5px; }
+  .stat{ display:inline-flex; align-items:center; gap:7px; padding:3px 11px 3px 9px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid var(--glass-border); font-size:12.5px; font-weight:600; color:var(--ink); }
+  .stat i{ width:7px; height:7px; border-radius:50%; background:var(--c); box-shadow:0 0 9px var(--c); }
+  .home-toolbar{ padding:10px 28px 2px; }
+  .crumbs{ padding:6px 28px 0; min-height:32px; }
+  .spaces-strip{ padding:6px 28px 0; }
+  .song-grid{ padding:16px 28px 40px; }
+  .glass-btn .ic{ display:inline-block; }
+
+  /* barra lateral (solo pantallas anchas) */
+  .side-rail{ position:relative; width:0; flex:0 0 auto; z-index:6; transition:width .6s var(--ease-soft); }
+  #homeScreen.has-side .side-rail{ width:76px; }
+  #homeScreen.has-side .home-header .actions{ display:none; }
+  .side-inner{
+    position:absolute; left:10px; top:14px; width:56px; max-height:calc(100% - 28px); padding:6px;
+    display:flex; flex-direction:column; gap:6px; border-radius:24px; overflow-x:hidden; overflow-y:auto; scrollbar-width:none;
+    background:linear-gradient(160deg, rgba(255,255,255,.11), rgba(255,255,255,.03));
+    border:1px solid var(--glass-border); border-top-color:var(--glass-border-bright);
+    -webkit-backdrop-filter:blur(20px) saturate(1.6); backdrop-filter:blur(20px) saturate(1.6);
+    box-shadow:var(--glass-edge), 0 24px 44px -22px rgba(0,0,0,.7), 0 0 40px -18px var(--accent-soft);
+    opacity:0; transform:translateX(-16px); pointer-events:none;
+    transition:width .35s var(--ease-soft), opacity .5s ease, transform .6s var(--spring);
+  }
+  .side-inner::-webkit-scrollbar{ display:none; }
+  #homeScreen.has-side .side-inner{ opacity:1; transform:none; pointer-events:auto; }
+  .side-inner:hover, .side-inner:focus-within{ width:204px; }
+  .side-slot{ display:flex; flex-direction:column; gap:6px; padding:6px 0; border-top:1px solid rgba(255,255,255,.1); border-bottom:1px solid rgba(255,255,255,.1); }
+  .side-inner .glass-btn{ width:100%; height:42px; padding:0 11px; border-radius:17px; justify-content:flex-start; gap:12px; white-space:nowrap; flex-shrink:0; aspect-ratio:auto; font-size:13.5px; }
+  .side-inner .glass-btn .ic{ width:20px; flex:0 0 20px; text-align:center; font-size:15px; line-height:1; display:inline-flex; align-items:center; justify-content:center; }
+  .side-inner .glass-btn .lb{ opacity:0; transition:opacity .2s ease; }
+  .side-inner:hover .glass-btn .lb, .side-inner:focus-within .glass-btn .lb{ opacity:1; }
+  .side-inner .icon-btn-wrap{ display:block; position:relative; }
+  .side-inner .icon-btn-wrap .badge{ top:-3px; right:2px; }
+  #sideNewSong{ background:linear-gradient(135deg, var(--accent-soft), rgba(167,139,250,.38)); }
+
+  /* recorrido guiado */
+  #tour{ position:fixed; inset:0; z-index:90; display:none; }
+  #tour.on{ display:block; animation:veilIn .3s ease; }
+  .tour-block{ position:fixed; inset:0; }
+  .tour-spot{
+    position:fixed; pointer-events:none;
+    box-shadow:0 0 0 9999px rgba(5,6,18,.76), 0 0 0 2px var(--accent), 0 0 34px 3px var(--accent-soft);
+    transition:left .5s var(--ease-soft), top .5s var(--ease-soft), width .5s var(--ease-soft), height .5s var(--ease-soft), border-radius .5s ease;
+  }
+  .tour-spot.nofocus{ box-shadow:0 0 0 9999px rgba(5,6,18,.8); }
+  .tour-card{
+    position:fixed; padding:18px 18px 14px; border-radius:22px; color:var(--ink);
+    background:linear-gradient(160deg, rgba(44,40,96,.94), rgba(15,17,44,.96));
+    border:1px solid var(--glass-border); border-top-color:var(--glass-border-bright);
+    box-shadow:var(--glass-edge), 0 40px 80px -24px rgba(0,0,0,.9), 0 0 50px -18px var(--accent-soft);
+    transition:left .5s var(--ease-soft), top .5s var(--ease-soft);
+  }
+  .tour-count{ font-size:11px; letter-spacing:1.4px; font-weight:800; color:var(--accent); }
+  .tour-card h4{ font-family:'Fraunces',serif; font-size:21px; font-weight:600; margin:4px 0 6px; letter-spacing:-.2px; }
+  .tour-card p{ margin:0; font-size:14px; line-height:1.55; color:var(--ink-dim); }
+  .tour-dots{ display:flex; gap:5px; margin:14px 0 12px; }
+  .tour-dots i{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.2); transition:width .3s var(--ease-soft), background .3s; }
+  .tour-dots i.on{ width:20px; border-radius:4px; background:var(--accent); }
+  .tour-btns{ display:flex; align-items:center; gap:8px; }
+  .tour-btns .glass-btn{ padding:8px 16px; font-size:13.5px; }
+  .tour-skip{ font:inherit; font-size:13px; font-weight:600; color:var(--ink-faint); background:none; border:none; cursor:pointer; padding:8px 4px; }
+  .tour-skip:hover{ color:var(--ink); }
+
+  @media (max-width:900px){
+    .home-header{ padding:14px 18px 2px; flex-direction:column; align-items:flex-start; }
+    .home-header .greet h1{ font-size:24px; }
+    .home-toolbar{ padding:8px 18px 2px; }
+    .crumbs, .spaces-strip{ padding-left:18px; padding-right:18px; }
+    .song-grid{ padding:12px 18px 100px; }
+    #viewBtn{ display:none; }
+    .side-rail{ display:none; }
+  }
+  /* saludo y frase del día */
+  .quote-card{
+    grid-column:1 / -1; margin:18px auto 0; padding:20px 26px; max-width:640px; text-align:center; border-radius:22px;
+    background:linear-gradient(155deg, rgba(255,255,255,.07), rgba(255,255,255,.015));
+    border:1px dashed rgba(255,255,255,.2);
+  }
+  .quote-card blockquote{ margin:0; font-family:'Fraunces',serif; font-style:italic; font-size:18px; line-height:1.5; color:var(--ink); }
+  .quote-card figcaption{ margin-top:10px; font-size:11.5px; letter-spacing:1.3px; text-transform:uppercase; font-weight:700; color:var(--accent); }
+  .song-grid.enter .quote-card{ animation:itemIn .6s var(--spring) backwards; animation-delay:.5s; }
+  #splash .splash-quote{
+    max-width:min(78vw, 520px); margin-top:3vmin; text-align:center; font-family:'Fraunces',serif; font-style:italic;
+    font-size:min(2.6vmin, 18px); line-height:1.5; color:var(--ink-dim); opacity:0;
+    animation:fadeInHint 1s ease forwards; animation-delay:1.9s;
+  }
+  #splash .splash-quote small{ display:block; margin-top:6px; font-style:normal; font-size:.72em; letter-spacing:1.3px; text-transform:uppercase; font-weight:700; color:var(--accent); }
+  @media (prefers-reduced-motion: reduce){ #splash .splash-quote{ animation:none; opacity:1; } }
 </style>
 </head>
 <body>
@@ -1284,6 +1383,7 @@
     </div>
     <span class="clef cclef">𝄡</span>
     <div class="brand-name">Sonarium</div>
+    <div class="splash-quote" id="splashQuote"></div>
   </div>
   <div class="hint">toca para continuar</div>
 </div>
@@ -1302,22 +1402,29 @@
 
     <!-- ============ HOME ============ -->
     <div id="homeScreen">
+      <aside class="side-rail" id="sideRail" aria-label="Herramientas"><div class="side-inner" id="sideInner">
+        <button class="glass-btn side-static" id="sideNewSong" title="Nueva canción" type="button"><span class="ic">+</span><span class="lb">Nueva canción</span></button>
+        <div class="side-slot" id="sideSlot"></div>
+        <button class="glass-btn side-static" id="sideCollapse" title="Volver los botones arriba" type="button"><span class="ic"></span><span class="lb">Botones arriba</span></button>
+      </div></aside>
+      <div class="home-main">
       <div class="home-header">
         <div class="greet">
           <div class="greet-row">
             <h1 id="greeting">Hola 👋</h1>
             <button class="glass-btn acct" id="accountBtn" title="Cuenta"><span class="adot"></span><span class="al">Iniciar sesión</span></button>
           </div>
-          <p>Bienvenido a <strong>Sonarium</strong>. Elige una canción o crea una nueva.</p>
+          <p id="homeSub" class="home-sub"></p>
         </div>
         <div class="actions desktop-actions">
           <div class="icon-btn-wrap">
-            <button class="glass-btn icon-only" id="trashToggle" title="Papelera">🗑</button>
+            <button class="glass-btn icon-only" id="trashToggle" title="Papelera"><span class="ic">🗑</span><span class="lb">Papelera</span></button>
             <span class="badge" id="trashBadge" style="display:none;">0</span>
           </div>
-          <button class="glass-btn" id="exportBtn" title="Exportar repertorio">⬇ Exportar</button>
-          <button class="glass-btn" id="importBtn" title="Importar repertorio">⬆ Importar</button>
-          <button class="glass-btn" id="pdfBtn" title="Importar canciones desde un PDF">📄 Desde PDF</button>
+          <button class="glass-btn" id="exportBtn" title="Exportar repertorio"><span class="ic">⬇</span><span class="lb">Exportar</span></button>
+          <button class="glass-btn" id="importBtn" title="Importar repertorio"><span class="ic">⬆</span><span class="lb">Importar</span></button>
+          <button class="glass-btn" id="pdfBtn" title="Importar canciones desde un PDF"><span class="ic">📄</span><span class="lb">Desde PDF</span></button>
+          <button class="glass-btn icon-only" id="sideToggle" title="Mover los botones a una barra lateral" aria-label="Mover los botones a una barra lateral" type="button"></button>
           <input type="file" id="importFile" accept="application/json" style="display:none">
         </div>
       </div>
@@ -1330,12 +1437,13 @@
         </select>
         <button class="glass-btn primary desktop-actions" id="newSongBtn">+ Nueva canción</button>
         <button class="glass-btn icon-only view-btn" id="viewBtn" title="Cambiar vista" aria-label="Cambiar vista"></button>
-        <button class="glass-btn" id="newFolderBtn" title="Crear una carpeta aquí">📁 Carpeta</button>
-        <button class="glass-btn" id="newSpaceBtn" title="Espacio temporal para las canciones de un momento dado">⏱ Espacio</button>
+        <button class="glass-btn" id="newFolderBtn" title="Crear una carpeta aquí"><span class="ic">📁</span><span class="lb">Carpeta</span></button>
+        <button class="glass-btn" id="newSpaceBtn" title="Espacio temporal para las canciones de un momento dado"><span class="ic">⏱</span><span class="lb">Espacio</span></button>
       </div>
       <div class="crumbs" id="crumbs"></div>
       <div class="spaces-strip" id="spacesStrip"></div>
       <div class="song-grid" id="songGrid"></div>
+      </div>
     </div>
 
     <!-- ============ SONG VIEW ============ -->
@@ -1388,9 +1496,8 @@
   <button class="glass-btn icon-only" id="mobileTrash" title="Papelera">
     <span class="icon-btn-wrap">🗑<span class="badge" id="mobileTrashBadge" style="display:none;">0</span></span>
   </button>
-  <button class="glass-btn icon-only" id="mobileImport" title="Importar">⬆</button>
-  <button class="glass-btn icon-only" id="mobilePdf" title="Importar desde PDF">📄</button>
-  <button class="glass-btn icon-only" id="mobileExport" title="Exportar">⬇</button>
+  <button class="glass-btn icon-only view-btn" id="mobileView" title="Cambiar vista" aria-label="Cambiar vista"></button>
+  <button class="glass-btn icon-only" id="mobileMore" title="Más opciones" aria-label="Más opciones">⋯</button>
   <button class="glass-btn primary" id="mobileNewSong">+ Nueva canción</button>
 </div>
 
@@ -1470,6 +1577,18 @@
     </div>
     <div class="modal-foot">
       <button class="glass-btn" id="closeTrash2">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Más opciones (celular) -->
+<div class="modal-veil" id="moreVeil">
+  <div class="modal glass narrow">
+    <div class="modal-head"><h3>Más opciones</h3><button class="glass-btn icon-only" id="moreClose">✕</button></div>
+    <div class="modal-body" id="moreList" style="gap:4px;">
+      <button class="pick-item" id="mobileImport" type="button">⬆&nbsp; Importar repertorio</button>
+      <button class="pick-item" id="mobilePdf" type="button">📄&nbsp; Importar desde PDF</button>
+      <button class="pick-item" id="mobileExport" type="button">⬇&nbsp; Exportar repertorio</button>
     </div>
   </div>
 </div>
@@ -1633,6 +1752,19 @@ y agrega las [G]tuyas [Am]aquí.`
     try{ localStorage.setItem(SEEDED_KEY, JSON.stringify(seeded)); }catch(e){}
     return list;
   }
+
+  /* ---------------- visitas (cuántas veces se abrió en este dispositivo) ---------------- */
+  const VISITS_KEY = "sonarium.visitas";
+  const visits = (function(){
+    let n = 0;
+    try{
+      n = parseInt(localStorage.getItem(VISITS_KEY), 10) || 0;
+      if(!sessionStorage.getItem("sonarium.visitaContada")){
+        n++; localStorage.setItem(VISITS_KEY, String(n)); sessionStorage.setItem("sonarium.visitaContada", "1");
+      }
+    }catch(e){}
+    return n;
+  })();
 
   /* ---------------- estado ---------------- */
   let songs = [], folders = [], spaces = [], tombs = [], meta = {};
@@ -2313,6 +2445,23 @@ service cloud.firestore {
     el.crumbs.innerHTML = parts.join("");
   }
 
+  // Subtítulo: bienvenida las primeras 2 visitas; después, contadores (los que valen 0 no se muestran).
+  function renderSub(){
+    const p = document.getElementById("homeSub");
+    if(!p) return;
+    if(visits <= 2){
+      p.innerHTML = 'Bienvenido a <strong>Sonarium</strong>. Elige una canción o crea una nueva.';
+      return;
+    }
+    const nS = songs.filter(s => !s.trashedAt).length, nF = folders.length, nE = spaces.length;
+    const pl = (n, a, b) => n + " " + (n === 1 ? a : b);
+    const parts = [];
+    if(nS) parts.push(["var(--accent)", pl(nS, "canción", "canciones")]);
+    if(nF) parts.push([PALETTE[1].hex, pl(nF, "carpeta", "carpetas")]);
+    if(nE) parts.push([PALETTE[2].hex, pl(nE, "espacio", "espacios")]);
+    p.innerHTML = parts.map(x => '<span class="stat" style="--c:' + x[0] + '"><i></i>' + x[1] + '</span>').join("");
+  }
+
   function renderSpacesStrip(){
     const q = el.searchInput.value.trim();
     if(!spaces.length || q){ el.spacesStrip.innerHTML = ""; el.spacesStrip.style.display = "none"; return; }
@@ -2382,8 +2531,10 @@ service cloud.firestore {
   function applyViewMode(){
     const list = isListView();
     el.songGrid.classList.toggle("list", list);
-    const b = document.getElementById("viewBtn");
-    if(b){ b.innerHTML = list ? ICON_GRID : ICON_LIST; b.title = list ? "Ver en cuadrícula" : "Ver en lista"; }
+    ["viewBtn", "mobileView"].forEach(id => {
+      const b = document.getElementById(id);
+      if(b){ b.innerHTML = list ? ICON_GRID : ICON_LIST; b.title = list ? "Ver en cuadrícula" : "Ver en lista"; }
+    });
   }
   const SORT_KEY = "sonarium.orden";
   function getSort(){ try{ const v = localStorage.getItem(SORT_KEY); return (v === "alfa" || v === "artista") ? v : "recientes"; }catch(e){ return "recientes"; } }
@@ -2405,6 +2556,7 @@ service cloud.firestore {
     applyViewMode();
     const q = el.searchInput.value.trim().toLowerCase();
     renderCrumbs();
+    renderSub();
     renderSpacesStrip();
     let html = "", i = 0;
 
@@ -2430,6 +2582,7 @@ service cloud.firestore {
         html += '<div class="empty-hint">Esta carpeta está vacía. Crea una canción aquí o arrastra canciones desde otra carpeta.</div>';
       }
     }
+    if(!q && loc.type !== "space") html += quoteHtml();
     el.songGrid.innerHTML = html;
     if(animate){
       el.songGrid.classList.remove("enter"); void el.songGrid.offsetWidth; el.songGrid.classList.add("enter");
@@ -2801,6 +2954,45 @@ service cloud.firestore {
   }
   // Saludo con nombre solo para quien aparezca aquí; los demás ven "Hola 👋".
   const GREETING_NAMES = { "alvaroguzm": "Al" };
+  // Saludos variados según la hora; se elige uno al abrir la página y se mantiene durante la sesión.
+  const GREET_POOL = {
+    m:[["Buenos días","☀️"],["Qué bonito día para cantar","🎶"],["Buen día","🌤️"],["Bienvenido de vuelta","☕"]],
+    t:[["Buenas tardes","🌻"],["Qué gusto verte","🎸"],["Hola de nuevo","👋"],["Bienvenido de vuelta","🎶"]],
+    n:[["Buenas noches","🌙"],["Qué bueno verte por aquí","✨"],["Hola de nuevo","👋"],["Una canción antes de dormir","🎶"]]
+  };
+  const greetPick = (function(){
+    const h = new Date().getHours();
+    const pool = GREET_POOL[h >= 5 && h < 12 ? "m" : (h >= 12 && h < 19 ? "t" : "n")];
+    let i = -1;
+    try{ i = parseInt(sessionStorage.getItem("sonarium.saludo"), 10); }catch(e){}
+    if(!(i >= 0 && i < pool.length)){
+      i = Math.floor(Math.random() * pool.length);
+      try{ sessionStorage.setItem("sonarium.saludo", String(i)); }catch(e){}
+    }
+    return pool[i];
+  })();
+  function makeGreeting(name){ return greetPick[0] + (name ? ", " + name : "") + " " + greetPick[1]; }
+
+  // Frase del día (cambia cada día, igual para todos).
+  const QUOTES = [
+    ["Quien canta bien, ora dos veces.", "San Agustín (atribuida)"],
+    ["Sin música, la vida sería un error.", "Friedrich Nietzsche"],
+    ["Donde las palabras fallan, la música habla.", "Hans Christian Andersen"],
+    ["La música es el lenguaje universal de la humanidad.", "Henry Wadsworth Longfellow"],
+    ["La música expresa lo que no puede decirse y sobre lo cual es imposible permanecer callado.", "Victor Hugo"],
+    ["Lo bueno de la música es que cuando te golpea no sientes dolor.", "Bob Marley"],
+    ["Canten al Señor un canto nuevo.", "Salmo 98"],
+    ["La música es una revelación más alta que toda sabiduría y filosofía.", "Ludwig van Beethoven (atribuida)"],
+    ["La música lava del alma el polvo de la vida cotidiana.", "Berthold Auerbach (atribuida)"]
+  ];
+  function todayQuote(){
+    const d = new Date(), n = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    return QUOTES[n % QUOTES.length];
+  }
+  function quoteHtml(){
+    const q = todayQuote();
+    return '<figure class="quote-card"><blockquote>“' + escapeHtml(q[0]) + '”</blockquote><figcaption>— ' + escapeHtml(q[1]) + '</figcaption></figure>';
+  }
   // Preferencia: ver acordes (músicos) o solo la letra (cantantes). Se guarda en el cuaderno y se sincroniza.
   function showChords(){ return !(meta.prefs && meta.prefs.chords === false); }
   function applyChordsPref(){
@@ -2864,7 +3056,7 @@ service cloud.firestore {
     applyFavicon(av);
     b.title = cloud.user ? statusText() : "Guarda tu cuaderno en la nube para verlo en otros dispositivos";
     const g = document.getElementById("greeting");
-    if(g) g.textContent = (cloud.user && GREETING_NAMES[cloud.user]) ? "Hola, " + GREETING_NAMES[cloud.user] + " 👋" : "Hola 👋";
+    if(g) g.textContent = makeGreeting(cloud.user && GREETING_NAMES[cloud.user]);
     const s = document.getElementById("accStatus");
     if(s){ s.textContent = statusText(); s.className = "acc-status st-" + cloud.status; }
   }
@@ -2876,8 +3068,9 @@ service cloud.firestore {
         '<div><div class="acc-name">' + escapeHtml(cloud.user) + '</div><div class="acc-status" id="accStatus"></div></div></div>' +
         '<p class="confirm-text">Tu cuaderno (canciones, carpetas y espacios temporales) se guarda cifrado en la nube y se sincroniza solo cuando haces cambios.</p>' +
         '<div class="field"><label>Tu avatar <span class="hint-inline">(también es el ícono de la pestaña)</span></label>' + avatarsHtml(meta.prefs && meta.prefs.avatar) + '</div>' +
-        '<label class="check-inline"><input type="checkbox" id="accShowChords"' + (showChords() ? " checked" : "") + '> Mostrar acordes en las canciones</label>' +
+        '<label class="check-inline"><input type="checkbox" id="accShowChords"' + (showChords() ? " checked" : "") + '> Mostrar acordes en las canciones</label>' + liteRow() +
         '<div class="acc-btns"><button class="glass-btn primary" data-acc="sync">⟳ Sincronizar ahora</button>' +
+        '<button class="glass-btn" data-acc="tour">❔ Ver el recorrido otra vez</button>' +
         '<button class="glass-btn" data-acc="replace">Reemplazar la nube con este dispositivo</button>' +
         '<button class="glass-btn" data-acc="logout">Cerrar sesión</button>' +
         '<button class="glass-btn danger" data-acc="logoutwipe">Cerrar sesión y borrar lo de este dispositivo</button></div>';
@@ -2893,7 +3086,7 @@ service cloud.firestore {
           '<div class="hint">Lo puedes cambiar cuando quieras con el botón 🎸 dentro de cada canción.</div></div>' : "") +
         (acc.mode === "create" ? '<div class="field"><label>Elige tu avatar</label>' + avatarsHtml(acc.avatar) +
           '<div class="hint">Será tu foto en Sonarium y el ícono de la pestaña del navegador.</div></div>' : "") +
-        '<label class="check-inline"><input type="checkbox" id="accRemember" checked> Recordar en este dispositivo</label>' +
+        '<label class="check-inline"><input type="checkbox" id="accRemember" checked> Recordar en este dispositivo</label>' + liteRow() +
         '<div class="acc-err" id="accErr"></div>' +
         '<button class="glass-btn primary" id="accSubmit" style="align-self:flex-start;">' + (acc.mode === "login" ? "Entrar" : "Crear mi cuenta") + '</button>' +
         '<p class="hint">Con tu clave se cifra el cuaderno antes de subirlo. <strong>Si la olvidas no se puede recuperar</strong>; por eso conviene exportar una copia de vez en cuando.</p>' +
@@ -2910,7 +3103,19 @@ service cloud.firestore {
     updateAccountChip();
   }
   function openAccount(){ renderAccount(); document.getElementById("accountVeil").classList.add("open"); }
-  function closeAccount(){ document.getElementById("accountVeil").classList.remove("open"); }
+  function closeAccount(){
+    const v = document.getElementById("accountVeil");
+    const wasOpen = v.classList.contains("open");
+    v.classList.remove("open");
+    // recorrido guiado: solo cuando acaba de ingresar y cierra la ventana
+    if(wasOpen && acc.fresh && cloud.user){
+      acc.fresh = false;
+      if(!(meta.prefs && meta.prefs.tour)) setTimeout(startTour, 450);
+    }
+  }
+  function liteRow(){
+    return '<label class="check-inline"><input type="checkbox" id="accLite"' + (document.body.classList.contains("lite") ? " checked" : "") + '> Modo ligero (menos efectos, más fluido)</label>';
+  }
 
   async function onAccSubmit(){
     if(acc.busy) return;
@@ -2922,6 +3127,7 @@ service cloud.firestore {
                        acc.mode === "create" ? acc.chords : undefined,
                        acc.mode === "create" ? acc.avatar : undefined);
       acc.busy = false;
+      acc.fresh = true;
       renderAccount();
       toast(acc.mode === "login" ? "Sesión iniciada" : "Cuenta creada");
       if(activeId === null) renderHome(false);
@@ -2935,7 +3141,8 @@ service cloud.firestore {
     }
   }
   async function onAccAction(act){
-    if(act === "sync"){ cloudSync(); toast("Sincronizando…"); }
+    if(act === "tour"){ closeAccount(); setTimeout(startTour, 450); }
+    else if(act === "sync"){ cloudSync(); toast("Sincronizando…"); }
     else if(act === "replace"){
       const ok = await askDialog({ title:"Reemplazar la nube", danger:true, ok:"Reemplazar",
         text:"La nube quedará exactamente como lo que tienes en este dispositivo. Úsalo solo si el cuaderno de la nube se dañó o si lo que ves aquí es lo correcto." });
@@ -3544,6 +3751,12 @@ service cloud.firestore {
     const er = document.getElementById("accErr"); if(er) er.textContent = "";
   });
   document.getElementById("accBody").addEventListener("change", (e) => {
+    if(e.target.id === "accLite"){
+      try{ localStorage.setItem("sonarium.ligero", e.target.checked ? "on" : "off"); }catch(_){}
+      document.body.classList.toggle("lite", e.target.checked);
+      toast(e.target.checked ? "Modo ligero activado" : "Modo ligero desactivado");
+      return;
+    }
     if(e.target.id === "accShowChords") setChordsPref(e.target.checked);
   });
 
@@ -3716,7 +3929,8 @@ service cloud.firestore {
   document.addEventListener("keydown", (e) => {
     if(e.key === "Escape"){
       closeModal(); closeConfirm(); closeTrash(); closePdfModal(); closeAccount(); closeSpaceModal();
-      closeDialog(null); closePick(undefined);
+      closeDialog(null); closePick(undefined); closeMore();
+      if(tour.on) endTour();
       document.getElementById("spaceSongsVeil").classList.remove("open");
       document.getElementById("songSpacesVeil").classList.remove("open");
     }
@@ -3743,6 +3957,8 @@ service cloud.firestore {
     const ALREADY_SEEN = sessionStorage.getItem("cancionero.splashSeen");
     if(ALREADY_SEEN){ splash.remove(); return; }
 
+    const sq = todayQuote();
+    document.getElementById("splashQuote").innerHTML = "“" + escapeHtml(sq[0]) + "”<small>— " + escapeHtml(sq[1]) + "</small>";
     const RAY_COUNT = 22;
     for(let i=0;i<RAY_COUNT;i++){
       const ray = document.createElement("div");
@@ -3763,7 +3979,7 @@ service cloud.firestore {
       setTimeout(() => splash.remove(), 650);
     }
     splash.addEventListener("click", dismiss);
-    setTimeout(dismiss, 3200);
+    setTimeout(dismiss, 4600);
   })();
 
   /* ---------------- brillo del cristal que sigue al puntero ---------------- */
@@ -3806,6 +4022,11 @@ service cloud.firestore {
 
   /* ---------------- modo ligero automático ---------------- */
   (function autoLite(){
+    // si la persona eligió (en su cuenta) activar o desactivar el modo ligero, se respeta sin medir
+    let lp = null;
+    try{ lp = localStorage.getItem("sonarium.ligero"); }catch(e){}
+    if(lp === "on") document.body.classList.add("lite");
+    if(lp === "on" || lp === "off") return;
     setTimeout(() => {
       if(document.hidden || !window.requestAnimationFrame) return;
       let n = 0, t0 = 0, aborted = false;
@@ -3827,6 +4048,175 @@ service cloud.firestore {
     }, 4600);
   })();
 
+  /* ---------------- hoja "Más opciones" (celular) ---------------- */
+  function closeMore(){ document.getElementById("moreVeil").classList.remove("open"); }
+  document.getElementById("mobileMore").addEventListener("click", () => document.getElementById("moreVeil").classList.add("open"));
+  document.getElementById("moreClose").addEventListener("click", closeMore);
+  document.getElementById("moreVeil").addEventListener("click", (e) => { if(e.target.id === "moreVeil") closeMore(); });
+  document.getElementById("moreList").addEventListener("click", (e) => { if(e.target.closest("button")) closeMore(); });
+  document.getElementById("mobileView").addEventListener("click", () => document.getElementById("viewBtn").click());
+
+  /* ---------------- barra lateral: los botones se mudan con animación ---------------- */
+  const SIDE_KEY = "sonarium.barra";
+  const SIDE_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>';
+  const sideState = { on:false, holders:new Map() };
+  document.getElementById("sideToggle").innerHTML = SIDE_SVG;
+  document.querySelector("#sideCollapse .ic").innerHTML = SIDE_SVG;
+  const isWide = () => window.matchMedia("(min-width:901px)").matches;
+  function sidePref(){ try{ return localStorage.getItem(SIDE_KEY); }catch(e){ return null; } }
+  function sideNodes(){
+    return ["newFolderBtn", "newSpaceBtn", "pdfBtn", "importBtn", "exportBtn"].map(id => document.getElementById(id))
+      .concat([document.getElementById("trashToggle").parentElement]);
+  }
+  function applySide(animate){
+    const want = isWide() && sidePref() === "on";
+    if(want === sideState.on) return;
+    const home = el.homeScreen, slot = document.getElementById("sideSlot"), nodes = sideNodes();
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const doAnim = !!animate && !reduce && home.style.display !== "none";
+    const before = doAnim ? nodes.map(n => n.getBoundingClientRect()) : null;
+    if(want){
+      nodes.forEach(n => {
+        const c = document.createComment("slot");
+        n.parentNode.insertBefore(c, n); sideState.holders.set(n, c); slot.appendChild(n);
+      });
+    } else {
+      nodes.forEach(n => { const c = sideState.holders.get(n); if(c && c.parentNode) c.parentNode.replaceChild(n, c); });
+      sideState.holders.clear();
+    }
+    home.classList.toggle("has-side", want);
+    sideState.on = want;
+    if(doAnim){
+      nodes.forEach((n, i) => {
+        const a = before[i], b = n.getBoundingClientRect();
+        n.animate([
+          { transform:"translate(" + (a.left - b.left) + "px," + (a.top - b.top) + "px) scale(.92)", opacity:.55 },
+          { transform:"none", opacity:1 }
+        ], { duration:760 + i*70, easing:"cubic-bezier(.34,1.25,.64,1)", fill:"backwards" });
+      });
+    }
+  }
+  function setSide(on, animate){
+    try{ localStorage.setItem(SIDE_KEY, on ? "on" : "off"); }catch(e){}
+    applySide(animate);
+  }
+  document.getElementById("sideToggle").addEventListener("click", () => setSide(true, true));
+  document.getElementById("sideCollapse").addEventListener("click", () => setSide(false, true));
+  document.getElementById("sideNewSong").addEventListener("click", () => openModal(null));
+  window.addEventListener("resize", () => applySide(false));
+  function afterSplash(fn){
+    const t = () => { if(document.getElementById("splash")) setTimeout(t, 250); else setTimeout(fn, 800); };
+    t();
+  }
+
+  /* ---------------- scroll desde cualquier parte del inicio (encabezado, barra, migas) ---------------- */
+  (function forwardScroll(){
+    const home = el.homeScreen, grid = el.songGrid;
+    home.addEventListener("wheel", (e) => {
+      if(e.target.closest(".song-grid")) return;
+      if(Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      if(grid.scrollHeight <= grid.clientHeight) return;
+      grid.scrollTop += e.deltaY;
+      e.preventDefault();
+    }, { passive:false });
+    let ty = null;
+    home.addEventListener("touchstart", (e) => { ty = e.target.closest(".song-grid") ? null : e.touches[0].clientY; }, { passive:true });
+    home.addEventListener("touchmove", (e) => {
+      if(ty === null) return;
+      const y = e.touches[0].clientY;
+      grid.scrollTop += ty - y; ty = y;
+    }, { passive:true });
+  })();
+
+  /* ---------------- recorrido guiado (solo la primera vez que alguien entra) ---------------- */
+  const TOUR_STEPS = [
+    { sel:"", t:"¡Bienvenido a Sonarium! 🎶", d:"Te muestro lo básico en menos de un minuto. Puedes saltarlo cuando quieras." },
+    { sel:"#newSongBtn, #mobileNewSong", t:"Crea tu primera canción", d:"Escribe la letra y pon cada acorde entre corchetes, así: [Am]Vamos a [F]cantar. ¿Copiaste una con los acordes encima de la letra? Pégala y usa el botón ✨ Convertir." },
+    { sel:"#searchInput", t:"Encuentra lo que sea", d:"Busca por título, artista o nombre de carpeta. Con el selector de al lado ordenas por recientes, A–Z o artista." },
+    { sel:"#newFolderBtn", t:"Organiza con carpetas", d:"Crea carpetas y subcarpetas, y arrastra las canciones hasta ellas. También puedes cargar las carpetas de la liturgia." },
+    { sel:"#newSpaceBtn", t:"Espacios temporales", d:"Reúne las canciones de un momento dado, como la misa del domingo. Al vencer, el espacio desaparece solo y las canciones siguen en tu cuaderno." },
+    { sel:"#viewBtn, #mobileView", t:"Lista o cuadrícula", d:"Cambia cómo ves tus canciones: tarjetas grandes o una lista compacta." },
+    { sel:"#exportBtn, #mobileMore", t:"Copias y PDF", d:"Exporta tu repertorio como copia de seguridad, impórtalo o saca canciones de un PDF. En el celular están en el botón ⋯." },
+    { sel:"#accountBtn", t:"Tu cuenta", d:"Tu cuaderno se guarda cifrado en la nube y se sincroniza solo. Aquí también cambias tu avatar y si ves acordes o solo la letra." },
+    { sel:"", t:"¡Listo para cantar! 🎸", d:"Toca una canción para abrirla: sube o baja el tono con − / +, activa el auto-scroll con ▶ y toca la letra para ocultar los controles." }
+  ];
+  const tour = { on:false, i:0, steps:[] };
+  function visibleEl(sel){
+    return [...document.querySelectorAll(sel)].find(n => {
+      const r = n.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && getComputedStyle(n).visibility !== "hidden";
+    }) || null;
+  }
+  function tourDom(){
+    let t = document.getElementById("tour");
+    if(t) return t;
+    t = document.createElement("div"); t.id = "tour";
+    t.innerHTML = '<div class="tour-block"></div><div class="tour-spot nofocus" id="tourSpot"></div>' +
+      '<div class="tour-card" id="tourCard"><div class="tour-count" id="tourCount"></div><h4 id="tourTitle"></h4><p id="tourText"></p>' +
+      '<div class="tour-dots" id="tourDots"></div>' +
+      '<div class="tour-btns"><button class="tour-skip" id="tourSkip" type="button">Saltar</button><span style="flex:1"></span>' +
+      '<button class="glass-btn" id="tourBack" type="button">Atrás</button><button class="glass-btn primary" id="tourNext" type="button">Siguiente</button></div></div>';
+    document.body.appendChild(t);
+    document.getElementById("tourSkip").addEventListener("click", () => endTour());
+    document.getElementById("tourBack").addEventListener("click", () => showTourStep(tour.i - 1));
+    document.getElementById("tourNext").addEventListener("click", () => {
+      if(tour.i >= tour.steps.length - 1) endTour(); else showTourStep(tour.i + 1);
+    });
+    return t;
+  }
+  function showTourStep(i){
+    if(i < 0 || i >= tour.steps.length) return;
+    tour.i = i;
+    const s = tour.steps[i], spot = document.getElementById("tourSpot"), card = document.getElementById("tourCard");
+    document.getElementById("tourCount").textContent = (i + 1) + " / " + tour.steps.length;
+    document.getElementById("tourTitle").textContent = s.t;
+    document.getElementById("tourText").textContent = s.d;
+    document.getElementById("tourDots").innerHTML = tour.steps.map((_, k) => '<i' + (k === i ? ' class="on"' : '') + '></i>').join("");
+    document.getElementById("tourBack").style.visibility = i ? "visible" : "hidden";
+    document.getElementById("tourNext").textContent = i === tour.steps.length - 1 ? "¡Listo!" : "Siguiente";
+    const W = window.innerWidth, H = window.innerHeight, cw = Math.min(340, W - 28);
+    card.style.width = cw + "px";
+    const ch = card.offsetHeight;
+    const target = s.sel ? visibleEl(s.sel) : null;
+    if(target){
+      const r = target.getBoundingClientRect(), pad = 7;
+      const rad = (parseFloat(getComputedStyle(target).borderTopLeftRadius) || 12) + pad;
+      spot.classList.remove("nofocus");
+      spot.style.cssText = "left:" + (r.left - pad) + "px;top:" + (r.top - pad) + "px;width:" + (r.width + pad*2) + "px;height:" + (r.height + pad*2) + "px;border-radius:" + rad + "px";
+      let top = r.bottom + pad + 14;
+      if(top + ch > H - 12) top = r.top - pad - 14 - ch;
+      if(top < 12) top = Math.max(12, Math.min(H - ch - 12, H/2 - ch/2));
+      card.style.left = Math.max(14, Math.min(W - cw - 14, r.left + r.width/2 - cw/2)) + "px";
+      card.style.top = top + "px";
+    } else {
+      spot.classList.add("nofocus");
+      spot.style.cssText = "left:50%;top:50%;width:0;height:0;border-radius:0";
+      card.style.left = (W - cw)/2 + "px";
+      card.style.top = Math.max(12, (H - ch)/2) + "px";
+    }
+  }
+  function startTour(){
+    if(tour.on) return;
+    if(activeId !== null) goHome();
+    document.querySelectorAll(".modal-veil.open").forEach(v => v.classList.remove("open"));
+    tour.steps = TOUR_STEPS.filter(s => !s.sel || visibleEl(s.sel));
+    tour.on = true;
+    tourDom().classList.add("on");
+    showTourStep(0);
+  }
+  function endTour(){
+    if(!tour.on) return;
+    tour.on = false;
+    const t = document.getElementById("tour"); if(t) t.classList.remove("on");
+    if(cloud.user && !(meta.prefs && meta.prefs.tour)) setPref({ tour:true });
+  }
+  window.addEventListener("resize", () => { if(tour.on) showTourStep(tour.i); });
+  document.addEventListener("keydown", (e) => {
+    if(!tour.on) return;
+    if(e.key === "ArrowRight" && tour.i < tour.steps.length - 1) showTourStep(tour.i + 1);
+    else if(e.key === "ArrowLeft") showTourStep(tour.i - 1);
+  });
+
   /* ---------------- primera carga ---------------- */
   loadState();
   applyChordsPref();
@@ -3836,6 +4226,10 @@ service cloud.firestore {
   goHome();
   updateAccountChip();
   restoreSession();
+  // a partir de la 4.ª visita, los botones se mudan solos a la barra lateral (una sola vez, con animación)
+  if(sidePref() === null && visits >= 4 && isWide()){
+    afterSplash(() => { setSide(true, true); toast("Tus herramientas ahora están en la barra de la izquierda · pasa el cursor para ver los nombres"); });
+  } else applySide(false);
 
 })();
 </script>
