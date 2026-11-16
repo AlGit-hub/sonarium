@@ -1370,6 +1370,47 @@
   }
   #splash .splash-quote small{ display:block; margin-top:6px; font-style:normal; font-size:.72em; letter-spacing:1.3px; text-transform:uppercase; font-weight:700; color:var(--accent); }
   @media (prefers-reduced-motion: reduce){ #splash .splash-quote{ animation:none; opacity:1; } }
+  /* espacios: navegación en la canción, duración tipo alarma, reordenar */
+  .space-nav{
+    position:absolute; left:50%; bottom:96px; transform:translateX(-50%); z-index:5;
+    display:flex; align-items:center; gap:6px; padding:6px; border-radius:999px; background:rgba(18,20,44,.55);
+  }
+  .space-nav button{
+    font:inherit; font-size:13px; font-weight:700; color:var(--ink); white-space:nowrap; cursor:pointer;
+    background:rgba(255,255,255,.1); border:1px solid transparent; border-radius:999px; padding:9px 15px;
+    transition:background .25s ease, transform .35s var(--spring), opacity .25s ease;
+  }
+  .space-nav button:hover:not(:disabled){ background:rgba(255,255,255,.2); transform:translateY(-1px); }
+  .space-nav button:active:not(:disabled){ transform:scale(.96); }
+  .space-nav button:disabled{ opacity:.3; cursor:default; }
+  .space-nav .sp-back{ background:linear-gradient(135deg, var(--accent-soft), rgba(167,139,250,.32)); border-color:rgba(255,255,255,.2); }
+  .space-nav .sp-back b{ font-weight:800; font-size:11.5px; opacity:.8; margin-left:4px; }
+  #songScreen.has-nav .lyrics-area{ padding-bottom:220px; }
+  .scrollbar-dock #homeBtn{ font-size:16px; }
+  @media (max-width:900px){ .space-nav{ bottom:82px; } }
+  @media (max-width:520px){ .space-nav .t{ display:none; } .space-nav button{ padding:9px 14px; } }
+  @media (orientation:landscape) and (max-height:620px){
+    .space-nav{ left:auto; right:16px; bottom:60px; transform:none; padding:4px; }
+    .space-nav button{ padding:7px 12px; }
+    #songScreen.has-nav .lyrics-area{ padding-bottom:120px; }
+  }
+
+  .dur-row{ display:flex; gap:10px; }
+  .dur-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 6px 6px; border-radius:16px; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); }
+  .dur-col button{ width:100%; height:26px; border:none; border-radius:10px; background:transparent; color:var(--ink-dim); font-size:12px; cursor:pointer; transition:background .2s ease, color .2s ease; }
+  .dur-col button:hover{ background:rgba(255,255,255,.12); color:var(--ink); }
+  .dur-col input{ width:100%; border:none !important; background:transparent !important; text-align:center; padding:2px 0 !important; box-shadow:none !important; font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; color:var(--accent); -moz-appearance:textfield; }
+  .dur-col input::-webkit-outer-spin-button, .dur-col input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .dur-col span{ font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--ink-faint); }
+  .dur-presets{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  #spaceUntil{ color-scheme:dark; }
+
+  .ord{ display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; margin-right:8px; border-radius:999px; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:#10122a; background:var(--c, var(--accent)); vertical-align:2px; }
+  .drag-handle{ cursor:grab; touch-action:none; }
+  .song-grid.list .song-card .card-actions .drag-handle{ width:34px; height:34px; color:var(--ink); background:rgba(255,255,255,.1); }
+  .song-card.sorting{ z-index:20; cursor:grabbing; transition:none !important; box-shadow:var(--glass-edge), 0 26px 50px -14px rgba(0,0,0,.85), 0 0 34px -10px var(--c, var(--accent)); }
+  .song-grid.sorting{ user-select:none; -webkit-user-select:none; }
+  .song-grid.sorting .song-card:not(.sorting){ transition:transform .22s var(--ease-soft) !important; }
 </style>
 </head>
 <body>
@@ -1481,7 +1522,13 @@
         <div id="songRender"></div>
       </div>
 
+      <div class="space-nav glass" id="spaceNav" style="display:none;">
+        <button id="spPrev" type="button" title="Canción anterior del espacio">‹ <span class="t">Anterior</span></button>
+        <button id="spBack" class="sp-back" type="button" title="Volver al espacio">↩ Espacio <b id="spPos"></b></button>
+        <button id="spNext" type="button" title="Siguiente canción del espacio"><span class="t">Siguiente</span> ›</button>
+      </div>
       <div class="scrollbar-dock glass" id="scrollDock">
+        <button id="homeBtn" title="Inicio (Cuaderno)" aria-label="Ir al inicio">🏠</button>
         <button id="playBtn" title="Reproducir / pausar auto-scroll">▶</button>
         <input type="range" id="speedRange" min="1" max="10" value="4">
         <span class="speed-label">velocidad <b id="speedVal">4</b></span>
@@ -1620,13 +1667,24 @@
 <!-- Nuevo espacio temporal -->
 <div class="modal-veil" id="spaceVeil">
   <div class="modal glass narrow">
-    <div class="modal-head"><h3>Nuevo espacio temporal</h3><button class="glass-btn icon-only" id="spaceClose">✕</button></div>
+    <div class="modal-head"><h3 id="spaceModalTitle">Nuevo espacio temporal</h3><button class="glass-btn icon-only" id="spaceClose">✕</button></div>
     <div class="modal-body">
       <p class="confirm-text">Reúne aquí las canciones que vas a tocar en un momento dado. Al vencer, el espacio desaparece solo; las canciones siguen en tu cuaderno.</p>
       <div class="field"><label>Nombre</label><input type="text" id="spaceName" placeholder="Ej: Misa del domingo"></div>
       <div class="field"><label>Dura</label>
-        <select id="spaceDur" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--glass-border);border-radius:12px;padding:10px 12px;color:var(--ink);font-size:14px;"></select>
-        <div class="hint">Después puedes extenderlo cuando quieras.</div>
+        <div class="dur-row">
+          <div class="dur-col"><button type="button" data-dstep="D:1" aria-label="Más días">▲</button><input type="number" id="durD" min="0" max="90" inputmode="numeric"><button type="button" data-dstep="D:-1" aria-label="Menos días">▼</button><span>días</span></div>
+          <div class="dur-col"><button type="button" data-dstep="H:1" aria-label="Más horas">▲</button><input type="number" id="durH" min="0" max="999" inputmode="numeric"><button type="button" data-dstep="H:-1" aria-label="Menos horas">▼</button><span>horas</span></div>
+          <div class="dur-col"><button type="button" data-dstep="M:5" aria-label="Más minutos">▲</button><input type="number" id="durM" min="0" max="999" inputmode="numeric"><button type="button" data-dstep="M:-5" aria-label="Menos minutos">▼</button><span>min</span></div>
+        </div>
+        <div class="dur-presets">
+          <button type="button" class="mini" data-dpre="60">1 h</button><button type="button" class="mini" data-dpre="720">12 h</button><button type="button" class="mini" data-dpre="1440">1 día</button><button type="button" class="mini" data-dpre="2880">2 días</button><button type="button" class="mini" data-dpre="10080">1 semana</button>
+        </div>
+        <div class="hint" id="spaceWhen" style="margin-top:10px;"></div>
+      </div>
+      <div class="field"><label>O elige el día y la hora exactos</label>
+        <input type="datetime-local" id="spaceUntil">
+        <div class="hint">El tiempo se cuenta desde este momento. Después puedes extenderlo cuando quieras (máximo 90 días).</div>
       </div>
     </div>
     <div class="modal-foot"><button class="glass-btn" id="spaceCancel">Cancelar</button><button class="glass-btn primary" id="spaceCreate">Crear espacio</button></div>
@@ -1770,6 +1828,7 @@ y agrega las [G]tuyas [Am]aquí.`
   let songs = [], folders = [], spaces = [], tombs = [], meta = {};
   let loc = { type:"folder", id:null };       // dónde estás en el explorador
   let activeId = null;
+  let songCtx = null;   // si la canción se abrió desde un espacio: { spaceId }
   let semitoneShift = 0;
   let editingId = null;
   let pendingDeleteId = null;
@@ -2478,17 +2537,18 @@ service cloud.firestore {
       }).join("");
   }
 
+  const HANDLE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"/></svg>';
   function songCardHtml(s, i, o){
     o = o || {};
     const color = s.color || PALETTE[0].hex;
     const acts = o.inSpace
-      ? '<button data-act="up" title="Subir en el orden">‹</button><button data-act="down" title="Bajar en el orden">›</button><button data-act="unspace" class="d" title="Quitar del espacio">✕</button>'
+      ? '<button data-act="unspace" class="d" title="Quitar del espacio">✕</button><button class="drag-handle" type="button" title="Arrastra para cambiar el orden" aria-label="Cambiar el orden">' + HANDLE_SVG + '</button>'
       : '<button data-act="space" title="Agregar a un espacio temporal">⏱</button><button data-act="move" title="Mover a otra carpeta">📁</button><button data-act="del" class="d" title="Eliminar">✕</button>';
     const sub = (o.path ? '<div class="path">' + escapeHtml(o.path) + '</div>' : "");
-    return '<div class="card song-card" draggable="true" data-id="' + attr(s.id) + '" style="--i:' + Math.min(i, 14) +
+    return '<div class="card song-card"' + (o.inSpace ? '' : ' draggable="true"') + ' data-id="' + attr(s.id) + '" style="--i:' + Math.min(i, 14) +
       ';--c:' + color + ';color:' + color + ';border-color:' + hexToRgba(color, 0.35) + ';">' +
       '<span class="dot" style="background:' + color + ';"></span><div class="glow" style="background:' + color + ';"></div>' +
-      '<div class="txt"><div class="t">' + escapeHtml(s.title) + '</div>' +
+      '<div class="txt"><div class="t">' + (o.num ? '<span class="ord">' + o.num + '</span>' : "") + escapeHtml(s.title) + '</div>' +
       '<div class="a">' + escapeHtml(s.artist || "") + '</div>' + sub + '</div>' +
       '<div class="card-actions">' + acts + '</div></div>';
   }
@@ -2512,9 +2572,9 @@ service cloud.firestore {
     return '<div class="space-head">' +
       '<div class="sh-top"><div><div class="sh-title">⏱ ' + escapeHtml(sp.name) + '</div>' +
       '<div class="sh-sub">Vence en <strong>' + fmtLeft(left) + '</strong> · ' + fmtDate(sp.expiresAt).replace(/\.$/, "") +
-      '. Al vencer solo se quita el espacio; las canciones se quedan en tu cuaderno.</div></div>' +
+      '. Al vencer solo se quita el espacio; las canciones se quedan en tu cuaderno.<br>Se tocan en este orden: arrastra <b>≡</b> para cambiarlo.</div></div>' +
       '<div class="sh-actions"><button class="glass-btn" data-sact="add">+ Agregar canciones</button>' +
-      '<button class="glass-btn" data-sact="rename">✎ Nombre</button>' +
+      '<button class="glass-btn" data-sact="edit">✎ Editar</button>' +
       '<button class="glass-btn danger" data-sact="del">Eliminar espacio</button></div></div>' +
       '<div class="sh-ext"><span>Extender el uso:</span>' + chips + '</div></div>';
   }
@@ -2530,7 +2590,7 @@ service cloud.firestore {
   }
   function applyViewMode(){
     const list = isListView();
-    el.songGrid.classList.toggle("list", list);
+    el.songGrid.classList.toggle("list", list || (loc.type === "space" && !el.searchInput.value.trim()));
     ["viewBtn", "mobileView"].forEach(id => {
       const b = document.getElementById(id);
       if(b){ b.innerHTML = list ? ICON_GRID : ICON_LIST; b.title = list ? "Ver en cuadrícula" : "Ver en lista"; }
@@ -2571,7 +2631,7 @@ service cloud.firestore {
       if(!sp){ loc = { type:"folder", id:null }; return renderHome(animate); }
       html += spaceHeadHtml(sp);
       const list = (sp.songIds || []).map(id => songs.find(s => s.id === id && !s.trashedAt)).filter(Boolean);
-      list.forEach(s => { html += songCardHtml(s, i++, { inSpace:true, path: pathLabel(effFolder(s)) }); });
+      list.forEach((s, k) => { html += songCardHtml(s, i++, { inSpace:true, num:k + 1, path: pathLabel(effFolder(s)) }); });
       if(!list.length) html += '<div class="empty-hint">Este espacio está vacío. Usa «Agregar canciones», o toca ⏱ en cualquier canción, o arrástrala hasta el espacio.</div>';
     } else {
       html += '<div class="card add-card" id="addCard"><div class="plus">+</div><div>Nueva canción</div></div>';
@@ -2606,6 +2666,7 @@ service cloud.firestore {
   function goHome(){
     stopAutoScroll();
     activeId = null;
+    songCtx = null;
     el.songScreen.style.display = "none";
     el.homeScreen.style.display = "flex";
     document.body.classList.remove("song-open");
@@ -2624,7 +2685,8 @@ service cloud.firestore {
     renderHome(true);
   }
 
-  function openSong(id){
+  function openSong(id, ctx){
+    if(ctx !== undefined) songCtx = ctx;
     activeId = id;
     semitoneShift = 0;
     const song = songs.find(s => s.id === id);
@@ -2640,6 +2702,7 @@ service cloud.firestore {
     el.lyricsArea.scrollTop = 0;
     el.songRender.classList.remove("song-in"); void el.songRender.offsetWidth; el.songRender.classList.add("song-in");
     setAccent(song.color);
+    updateSpaceNav();
   }
   function setAccent(hex){
     if(hex){
@@ -2832,21 +2895,71 @@ service cloud.firestore {
   }
 
   /* ---------------- espacios temporales ---------------- */
-  let spaceDraft = { songIds:[], openAfter:true };
-  function openSpaceModal(pre){
-    spaceDraft = { songIds: pre || [], openAfter: !(pre && pre.length) };
-    document.getElementById("spaceName").value = "";
-    const sel = document.getElementById("spaceDur");
-    sel.innerHTML = SPACE_OPTIONS.map(o => '<option value="' + o.h + '"' + (o.h === 12 ? " selected" : "") + '>' + o.label + (o.h === 12 ? " (predeterminado)" : "") + '</option>').join("");
-    document.getElementById("spaceVeil").classList.add("open");
-    setTimeout(() => document.getElementById("spaceName").focus(), 30);
+  let spaceDraft = { songIds:[], openAfter:true, editId:null };
+  const $id = x => document.getElementById(x);
+  const MAX_SPACE_MIN = 90*1440;
+  function durMin(){
+    return (parseInt($id("durD").value, 10) || 0)*1440 + (parseInt($id("durH").value, 10) || 0)*60 + (parseInt($id("durM").value, 10) || 0);
   }
+  function setDurMin(min){
+    min = Math.max(0, Math.min(MAX_SPACE_MIN, Math.round(min)));
+    $id("durD").value = Math.floor(min/1440); $id("durH").value = Math.floor((min % 1440)/60); $id("durM").value = min % 60;
+  }
+  function localInputValue(ts){
+    const d = new Date(ts), p = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+  function refreshWhen(){
+    const min = durMin(), w = $id("spaceWhen");
+    if(min < 1){ w.textContent = "Pon al menos 1 minuto."; return; }
+    const ts = Date.now() + Math.min(min, MAX_SPACE_MIN)*60000;
+    w.innerHTML = "Vence el <strong>" + escapeHtml(fmtDate(ts).replace(/\.$/, "")) + "</strong>" + (min > MAX_SPACE_MIN ? " (máximo 90 días)" : "");
+    $id("spaceUntil").value = localInputValue(ts);
+  }
+  function openSpaceModal(pre, editId){
+    const sp = editId ? spaces.find(s => s.id === editId) : null;
+    spaceDraft = { songIds: pre || [], openAfter: !sp && !(pre && pre.length), editId: sp ? sp.id : null };
+    $id("spaceModalTitle").textContent = sp ? "Editar espacio" : "Nuevo espacio temporal";
+    $id("spaceCreate").textContent = sp ? "Guardar cambios" : "Crear espacio";
+    $id("spaceName").value = sp ? sp.name : "";
+    setDurMin(sp ? Math.max(1, Math.ceil((sp.expiresAt - Date.now())/60000)) : 12*60);
+    $id("spaceUntil").min = localInputValue(Date.now());
+    refreshWhen();
+    $id("spaceVeil").classList.add("open");
+    setTimeout(() => $id("spaceName").focus(), 30);
+  }
+  ["durD", "durH", "durM"].forEach(id => {
+    $id(id).addEventListener("input", refreshWhen);
+    $id(id).addEventListener("change", () => { setDurMin(durMin()); refreshWhen(); });
+  });
+  $id("spaceUntil").addEventListener("change", (e) => {
+    const min = Math.round((new Date(e.target.value).getTime() - Date.now())/60000);
+    if(!isFinite(min) || min < 1){ toast("Elige un momento que todavía no haya pasado"); refreshWhen(); return; }
+    setDurMin(min); refreshWhen();
+  });
+  $id("spaceVeil").addEventListener("click", (e) => {
+    const st = e.target.closest("[data-dstep]");
+    if(st){
+      const [f, d] = st.dataset.dstep.split(":");
+      setDurMin(durMin() + (parseInt(d, 10) || 0) * ({ D:1440, H:60, M:1 }[f]));
+      refreshWhen(); return;
+    }
+    const pr = e.target.closest("[data-dpre]");
+    if(pr){ setDurMin(parseInt(pr.dataset.dpre, 10)); refreshWhen(); }
+  });
   function closeSpaceModal(){ document.getElementById("spaceVeil").classList.remove("open"); }
   function createSpace(){
-    const name = document.getElementById("spaceName").value.trim() || "Espacio temporal";
-    const h = parseInt(document.getElementById("spaceDur").value, 10) || 12;
-    const now = Date.now();
-    const sp = { id: uid("e-"), name, songIds: spaceDraft.songIds.slice(), createdAt: now, expiresAt: now + h*3600000 };
+    const name = $id("spaceName").value.trim() || "Espacio temporal";
+    const min = durMin();
+    if(min < 1){ toast("Pon al menos 1 minuto de duración"); return; }
+    const now = Date.now(), exp = now + Math.min(min, MAX_SPACE_MIN)*60000;
+    if(spaceDraft.editId){
+      const sp0 = spaces.find(s => s.id === spaceDraft.editId);
+      if(sp0){ sp0.name = name; sp0.expiresAt = exp; persist(); }
+      closeSpaceModal(); renderHome(false); toast("Espacio actualizado");
+      return;
+    }
+    const sp = { id: uid("e-"), name, songIds: spaceDraft.songIds.slice(), createdAt: now, expiresAt: exp };
     spaces.push(sp);
     persist();
     closeSpaceModal();
@@ -3586,6 +3699,7 @@ service cloud.firestore {
     }
   }
   el.songGrid.addEventListener("click", (e) => {
+    if(e.target.closest(".drag-handle")) return;
     if(e.target.closest("#addCard")){ openModal(null); return; }
     const act = e.target.closest("[data-act]");
     if(act){ e.stopPropagation(); handleCardAction(act.dataset.act, act.closest(".card")); return; }
@@ -3595,14 +3709,14 @@ service cloud.firestore {
     if(sact){
       const a = sact.dataset.sact;
       if(a === "add") openSpaceSongs(loc.id);
-      else if(a === "rename") renameSpace(loc.id);
+      else if(a === "edit") openSpaceModal(null, loc.id);
       else if(a === "del") deleteSpace(loc.id);
       return;
     }
     const fc = e.target.closest(".folder-card");
     if(fc){ openFolder(fc.dataset.folder); return; }
     const card = e.target.closest(".card[data-id]");
-    if(card) openSong(card.dataset.id);
+    if(card) openSong(card.dataset.id, loc.type === "space" ? { spaceId: loc.id } : null);
   });
   el.crumbs.addEventListener("click", (e) => {
     const c = e.target.closest("[data-crumb]");
@@ -4046,6 +4160,97 @@ service cloud.firestore {
       };
       requestAnimationFrame(f);
     }, 4600);
+  })();
+
+  /* ---------------- canción abierta desde un espacio: anterior / siguiente / volver ---------------- */
+  function spaceList(){
+    const sp = songCtx && spaces.find(s => s.id === songCtx.spaceId);
+    if(!sp) return null;
+    return { sp, ids: (sp.songIds || []).filter(id => songs.some(s => s.id === id && !s.trashedAt)) };
+  }
+  function updateSpaceNav(){
+    const nav = document.getElementById("spaceNav"), L = spaceList();
+    const i = L ? L.ids.indexOf(activeId) : -1;
+    if(!L || i < 0){ nav.style.display = "none"; el.songScreen.classList.remove("has-nav"); return; }
+    nav.style.display = "flex"; el.songScreen.classList.add("has-nav");
+    document.getElementById("spPrev").disabled = i === 0;
+    document.getElementById("spNext").disabled = i === L.ids.length - 1;
+    document.getElementById("spPos").textContent = (i + 1) + "/" + L.ids.length;
+    document.getElementById("spBack").title = "Volver a «" + L.sp.name + "»";
+  }
+  function stepSpace(dir){
+    const L = spaceList(); if(!L) return;
+    const i = L.ids.indexOf(activeId) + dir;
+    if(i < 0 || i >= L.ids.length) return;
+    stopAutoScroll();
+    openSong(L.ids[i]);
+  }
+  function backToSpace(){
+    const L = spaceList();
+    if(!L){ toast("Ese espacio ya no existe"); goHome(); return; }
+    el.searchInput.value = "";
+    loc = { type:"space", id:L.sp.id };
+    goHome();
+  }
+  document.getElementById("spPrev").addEventListener("click", () => stepSpace(-1));
+  document.getElementById("spNext").addEventListener("click", () => stepSpace(1));
+  document.getElementById("spBack").addEventListener("click", backToSpace);
+  document.getElementById("homeBtn").addEventListener("click", () => {
+    el.searchInput.value = "";
+    loc = { type:"folder", id:null };
+    goHome();
+  });
+
+  /* ---------------- reordenar las canciones de un espacio arrastrando ≡ (mouse y dedo) ---------------- */
+  (function spaceSort(){
+    el.songGrid.addEventListener("pointerdown", (e) => {
+      const h = e.target.closest(".drag-handle");
+      if(!h || loc.type !== "space" || (e.pointerType === "mouse" && e.button !== 0)) return;
+      const sp = spaces.find(s => s.id === loc.id); if(!sp) return;
+      const cards = [...el.songGrid.querySelectorAll(".song-card")];
+      const card = h.closest(".song-card"), from = cards.indexOf(card);
+      if(from < 0) return;
+      e.preventDefault();
+      try{ h.setPointerCapture(e.pointerId); }catch(_){}
+      const grid = el.songGrid, rects = cards.map(c => c.getBoundingClientRect());
+      const startY = e.clientY, startScroll = grid.scrollTop, dh = rects[from].height + 8;
+      let to = from;
+      card.classList.add("sorting"); grid.classList.add("sorting");
+      const move = (ev) => {
+        const gr = grid.getBoundingClientRect();
+        if(ev.clientY < gr.top + 50) grid.scrollTop -= 14; else if(ev.clientY > gr.bottom - 50) grid.scrollTop += 14;
+        const dy = ev.clientY - startY + (grid.scrollTop - startScroll);
+        card.style.transform = "translateY(" + dy + "px) scale(1.015)";
+        const center = rects[from].top + rects[from].height/2 + dy;
+        let t = from;
+        rects.forEach((r, i) => {
+          const mid = r.top + r.height/2;
+          if(i < from && center < mid) t = Math.min(t, i);
+          if(i > from && center > mid) t = Math.max(t, i);
+        });
+        to = t;
+        cards.forEach((c, i) => {
+          if(i === from) return;
+          let s = 0;
+          if(from < to && i > from && i <= to) s = -dh; else if(from > to && i < from && i >= to) s = dh;
+          c.style.transform = s ? "translateY(" + s + "px)" : "";
+        });
+      };
+      const end = (ev) => {
+        h.removeEventListener("pointermove", move); h.removeEventListener("pointerup", end); h.removeEventListener("pointercancel", end);
+        try{ h.releasePointerCapture(e.pointerId); }catch(_){}
+        grid.classList.remove("sorting");
+        if(ev.type !== "pointercancel" && to !== from){
+          const ids = cards.map(c => c.dataset.id);
+          const m = ids.splice(from, 1)[0]; ids.splice(to, 0, m);
+          sp.songIds = ids.concat((sp.songIds || []).filter(id => !ids.includes(id)));
+          persist(); renderHome(false); toast("Orden actualizado");
+        } else {
+          cards.forEach(c => { c.classList.remove("sorting"); c.style.transform = ""; });
+        }
+      };
+      h.addEventListener("pointermove", move); h.addEventListener("pointerup", end); h.addEventListener("pointercancel", end);
+    });
   })();
 
   /* ---------------- hoja "Más opciones" (celular) ---------------- */
