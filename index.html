@@ -1402,8 +1402,8 @@
   .dur-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 6px 6px; border-radius:16px; background:rgba(255,255,255,.05); border:1px solid var(--glass-border); }
   .dur-col button{ width:100%; height:26px; border:none; border-radius:10px; background:transparent; color:var(--ink-dim); font-size:12px; cursor:pointer; transition:background .2s ease, color .2s ease; }
   .dur-col button:hover{ background:rgba(255,255,255,.12); color:var(--ink); }
-  .dur-col input{ width:100%; border:none !important; background:transparent !important; text-align:center; padding:2px 0 !important; box-shadow:none !important; font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; color:var(--accent); -moz-appearance:textfield; }
-  .dur-col input::-webkit-outer-spin-button, .dur-col input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .dur-col input{ width:100%; border:none !important; background:transparent !important; text-align:center; padding:2px 0 !important; box-shadow:none !important; font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; color:var(--accent); -moz-appearance:textfield; appearance:textfield; }
+  .dur-col input::-webkit-outer-spin-button, .dur-col input::-webkit-inner-spin-button{ -webkit-appearance:none; appearance:none; margin:0; }
   .dur-col span{ font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--ink-faint); }
   .dur-presets{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
   #spaceUntil{ color-scheme:dark; }
@@ -1688,6 +1688,84 @@
   html[data-theme="light"] .chorus{ background:rgba(255,255,255,.55); }
   /* modo ligero */
   html[data-theme="light"] body.lite .panel.glass, html[data-theme="light"] body.lite .modal, html[data-theme="light"] body.lite #toast, html[data-theme="light"] body.lite .topbar, html[data-theme="light"] body.lite .scrollbar-dock{ background-color:rgba(246,248,254,.96) !important; }
+  /* ---------- modo proyección ---------- */
+  #projVeil{ position:fixed; inset:0; z-index:300; background:#000; color:#fff; display:flex; flex-direction:column; cursor:none; user-select:none; -webkit-user-select:none; }
+  #projVeil[hidden]{ display:none; }
+  #projVeil.ctl{ cursor:default; }
+  #projVeil .pj-stage{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:4vh 6vw; gap:2vh; min-height:0; }
+  #projVeil .pj-label{ font-size:max(13px, 2.3vh); letter-spacing:.22em; text-transform:uppercase; color:#ffd166; min-height:3vh; font-weight:700; }
+  #projVeil .pj-text{ font-weight:700; line-height:1.22; max-width:100%; text-wrap:balance; }
+  #projVeil .pj-text div{ margin:.1em 0; }
+  #projVeil .pj-text.title div:first-child{ font-size:1.18em; }
+  #projVeil .pj-text .sub{ font-size:.55em; font-weight:500; opacity:.7; }
+  #projVeil.black .pj-stage, #projVeil.black .pj-foot{ visibility:hidden; }
+  #projVeil .pj-foot{ position:absolute; right:2vw; bottom:1.6vh; font-size:max(11px, 1.8vh); opacity:.35; }
+  #projVeil .pj-ctl{ position:fixed; left:50%; bottom:calc(18px + env(safe-area-inset-bottom)); transform:translateX(-50%); display:flex; gap:6px; padding:8px; border-radius:999px; opacity:0; pointer-events:none; transition:opacity .35s ease; background:rgba(30,32,60,.78); }
+  #projVeil.ctl .pj-ctl{ opacity:1; pointer-events:auto; }
+  #projVeil .pj-ctl button{ border:0; min-width:42px; height:42px; border-radius:999px; background:rgba(255,255,255,.1); color:#fff; font:inherit; font-size:18px; cursor:pointer; }
+  #projVeil .pj-ctl button:hover{ background:rgba(255,255,255,.22); }
+  #projVeil.recv .pj-ctl, #projVeil.recv .pj-foot{ display:none; }
+  body.projwin > *:not(#projVeil){ display:none !important; }
+  @media print{ #projVeil{ display:none !important; } }
+
+  /* ---------- biblioteca compartida ---------- */
+  .lib-tabs{ display:flex; gap:6px; padding:0 22px 8px; }
+  .lib-tabs .lt{ flex:1; border:0; border-radius:999px; padding:8px 10px; font:inherit; font-size:13px; font-weight:600; background:rgba(127,127,160,.14); color:var(--ink-dim); cursor:pointer; }
+  .lib-tabs .lt.on{ background:var(--accent); color:#fff; }
+  #libSh[hidden], #libEx[hidden]{ display:none !important; }
+  .lib-input{ width:100%; padding:11px 14px; border-radius:14px; border:1px solid var(--glass-border); background:rgba(127,127,160,.12); color:var(--ink); font:inherit; font-size:14px; }
+  .lib-check{ display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.4; color:var(--ink); }
+  .lib-check input{ margin-top:3px; accent-color:var(--accent); }
+  .lib-row{ border-radius:14px; background:rgba(127,127,160,.12); padding:10px 12px; }
+  .lib-top{ display:flex; align-items:center; gap:8px; }
+  .lib-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .lib-main b{ font-size:14px; }
+  .lib-main small{ font-size:11.5px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .lib-row .glass-btn{ padding:7px 11px; font-size:12px; }
+  .lib-prev pre{ margin:10px 0 6px; white-space:pre-wrap; font:12.5px/1.5 "JetBrains Mono", ui-monospace, monospace; color:var(--ink-dim); max-height:180px; overflow:auto; }
+  .lib-rep{ border:0; background:transparent; color:var(--ink-faint); font:inherit; font-size:12px; cursor:pointer; padding:4px 0; }
+  .lib-more{ align-self:center; }
+
+  /* ---------- copias e historial ---------- */
+  .bk-note, .bk-empty{ font-size:13px; color:var(--ink-dim); line-height:1.5; margin:0; }
+  .bk-list{ display:flex; flex-direction:column; gap:8px; max-height:48vh; overflow:auto; }
+  .bk-row{ display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:14px; background:rgba(127,127,160,.12); }
+  .bk-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .bk-info b{ font-size:13px; }
+  .bk-info small{ font-size:11.5px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bk-row .glass-btn{ padding:7px 11px; font-size:12px; }
+
+  /* ---------- diagramas de acordes ---------- */
+  .song-render .chord-tag{ cursor:pointer; }
+  .song-render .chord-tag::before{ content:""; position:absolute; inset:-3px -4px; }
+  .song-render .chord-tag.sel{ text-decoration:underline; text-underline-offset:3px; }
+  .chord-pop{ position:fixed; z-index:90; width:min(280px, calc(100vw - 24px)); padding:12px 14px 14px; border-radius:18px; color:var(--ink); box-shadow:0 18px 50px rgba(0,0,0,.45); }
+  .chord-pop[hidden]{ display:none; }
+  .chord-pop .cp-head{ display:flex; align-items:center; justify-content:space-between; }
+  .chord-pop .cp-head b{ font-size:22px; color:var(--accent); }
+  .chord-pop .cp-x{ border:0; background:transparent; color:var(--ink-dim); font-size:16px; cursor:pointer; padding:6px; }
+  .chord-pop .cp-tabs{ display:flex; gap:4px; margin:8px 0 6px; padding:3px; border-radius:999px; background:rgba(127,127,160,.16); }
+  .chord-pop .cp-tab{ flex:1; border:0; border-radius:999px; background:transparent; color:var(--ink-dim); font:inherit; font-size:12px; font-weight:600; padding:6px 0; cursor:pointer; }
+  .chord-pop .cp-tab.on{ background:var(--accent); color:#fff; }
+  .chord-pop .cp-fig{ display:flex; justify-content:center; padding:6px 0; color:var(--ink); }
+  .chord-pop .cp-fig svg{ max-width:100%; height:auto; overflow:visible; }
+  .chord-pop .cd-dot{ fill:var(--accent); stroke:none; }
+  .chord-pop .cd-wk{ fill:#fff; stroke:#3a3f66; }
+  .chord-pop .cd-bk{ fill:#1b1f3a; stroke:#1b1f3a; }
+  .chord-pop .cd-wk.on, .chord-pop .cd-bk.on{ fill:color-mix(in srgb, var(--accent) 70%, #fff); }
+  .chord-pop .cd-wk.root, .chord-pop .cd-bk.root{ fill:var(--accent); }
+  .chord-pop .cp-nav{ display:flex; align-items:center; justify-content:center; gap:12px; font-size:12px; color:var(--ink-dim); }
+  .chord-pop .cp-nav button{ border:0; width:30px; height:30px; border-radius:50%; background:rgba(127,127,160,.2); color:var(--ink); font-size:18px; line-height:1; cursor:pointer; }
+  .chord-pop .cp-notes{ margin-top:8px; text-align:center; font-size:12px; color:var(--ink-dim); }
+  .chord-pop .cp-none{ font-size:13px; color:var(--ink-dim); text-align:center; padding:14px 0; }
+  @media (max-width:640px){ .chord-pop{ left:50%; transform:translateX(-50%); bottom:calc(92px + env(safe-area-inset-bottom)); top:auto; } }
+  body.stage .chord-pop, body.stage .chord-tag{ cursor:default; }
+  @media print{ .chord-pop{ display:none !important; } }
+
+  /* resultados de búsqueda por letra */
+  .card .snip{ position:relative; font-size:12px; color:var(--ink-dim); margin-top:4px; line-height:1.4; font-style:italic; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .card .snip mark{ background:var(--accent-soft); color:var(--ink); border-radius:4px; padding:0 2px; font-style:normal; font-weight:700; }
+  .song-grid.list .song-card .snip{ margin:0; -webkit-line-clamp:1; }
 </style>
 </head>
 <body>
@@ -1757,6 +1835,8 @@
         <button class="glass-btn icon-only view-btn" id="viewBtn" title="Cambiar vista" aria-label="Cambiar vista"></button>
         <button class="glass-btn icon-only tools-home-btn" id="themeBtn" title="Cambiar entre tema claro y oscuro" aria-label="Cambiar tema"></button>
         <button class="glass-btn icon-only tools-home-btn" id="toolsHomeBtn" title="Metrónomo y afinador" aria-label="Metrónomo y afinador">🎼</button>
+        <button class="glass-btn icon-only tools-home-btn" id="libBtn" title="Biblioteca compartida: canciones de otras personas" aria-label="Biblioteca compartida">🌐</button>
+        <button class="glass-btn icon-only tools-home-btn" id="backupBtn" title="Copias de seguridad" aria-label="Copias de seguridad">🕘</button>
         <button class="glass-btn" id="newFolderBtn" title="Crear una carpeta aquí"><span class="ic">📁</span><span class="lb">Carpeta</span></button>
         <button class="glass-btn" id="newSpaceBtn" title="Espacio temporal para las canciones de un momento dado"><span class="ic">⏱</span><span class="lb">Espacio</span></button>
       </div>
@@ -1797,6 +1877,7 @@
             <button id="capoUp" aria-label="Subir un traste de capo">+</button>
           </div>
           <button class="glass-btn icon-only" id="stageBtn" title="Modo escenario: letra grande y sin distracciones" aria-label="Modo escenario">🎤</button>
+          <button class="glass-btn icon-only" id="projBtn" title="Proyectar la letra (sin acordes) en pantalla grande" aria-label="Proyectar la letra">📽️</button>
           <button class="glass-btn icon-only" id="toolsBtn" title="Metrónomo y afinador" aria-label="Metrónomo y afinador">🎼</button>
           <button class="glass-btn icon-only fav-btn" id="favBtn" title="Marcar como favorita" aria-label="Favorita" aria-pressed="false">☆</button>
           <button class="glass-btn icon-only" id="spaceBtn" title="Agregar a un espacio temporal">⏱</button>
@@ -1879,6 +1960,7 @@
         <button class="glass-btn" id="chorusBtn" type="button" style="margin-top:10px;" title="Selecciona las líneas del coro y pulsa aquí">🔆 Marcar selección como coro</button>
         <div class="hint">El coro se ve en <strong>negrita</strong> y con una barra de color. También puedes escribirlo a mano al estilo ChordPro: una línea <code>{soc}</code> antes del coro y <code>{eoc}</code> después. Con <code>{soc: Coro final}</code> cambias la etiqueta, y <code>{c: Estrofa 1}</code> pone un título de sección.</div>
         <button class="glass-btn" id="convertBtn" type="button" style="margin-top:10px;">✨ Convertir acordes sobre la letra</button>
+        <button class="glass-btn" id="histBtn" type="button" style="margin-top:10px;">🕘 Versiones anteriores de esta canción</button>
         <div class="hint">¿Copiaste una canción con los acordes en la línea de arriba (como en un cancionero)? Pégala aquí y pulsa el botón: coloca cada acorde entre corchetes en su lugar. Entiende C D E…, Do Re Mi… y la «-» como menor (A- = Am). También sirve si los acordes ya están entre corchetes: cambia [D-] por [Dm]. Revisa el resultado, a veces conviene ajustar la posición de algún acorde.</div>
       </div>
     </div>
@@ -1923,6 +2005,49 @@
   </div>
 </div>
 
+<!-- Biblioteca compartida -->
+<div class="modal-veil" id="libVeil">
+  <div class="modal glass" style="max-width:600px;">
+    <div class="modal-head"><h3>🌐 Biblioteca compartida</h3><button class="glass-btn icon-only" id="libClose" aria-label="Cerrar">✕</button></div>
+    <div class="lib-tabs"><button class="lt on" data-lt="ex" type="button">Explorar</button><button class="lt" data-lt="sh" type="button">Compartir una canción</button></div>
+    <div class="modal-body" style="gap:10px;">
+      <section id="libEx" style="display:flex;flex-direction:column;gap:10px;">
+        <input type="search" id="libSearch" class="lib-input" placeholder="Busca por título o artista…" autocomplete="off">
+        <div id="libMsg" class="bk-note"></div>
+        <div id="libRes" class="bk-list" style="max-height:52vh;"></div>
+      </section>
+      <section id="libSh" hidden style="display:flex;flex-direction:column;gap:10px;">
+        <p class="bk-note">Lo que compartas lo podrá ver y añadir <b>cualquier persona</b>. Comparte letras propias, de dominio público o con permiso de quien tenga los derechos.</p>
+        <select id="libPick" class="lib-input"></select>
+        <input type="text" id="libName" class="lib-input" maxlength="30" placeholder="Tu nombre (opcional, si no, «anónimo»)">
+        <label class="lib-check"><input type="checkbox" id="libOk"> <span>Confirmo que puedo compartir esta letra y acepto que sea pública.</span></label>
+        <button class="glass-btn primary" id="libPublish" type="button">Compartir con todos</button>
+        <div id="libShMsg" class="bk-note"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Copias de seguridad -->
+<div class="modal-veil" id="backupVeil">
+  <div class="modal glass narrow">
+    <div class="modal-head"><h3>Copias de seguridad</h3><button class="glass-btn icon-only" id="backupClose" aria-label="Cerrar">✕</button></div>
+    <div class="modal-body" style="gap:10px;">
+      <p class="bk-note">Sonarium guarda copias solas en este dispositivo (varias al día, y una por día las últimas dos semanas). Si algo sale mal, restaura una.</p>
+      <button class="glass-btn primary" id="backupNow" type="button">Guardar una copia ahora</button>
+      <div id="backupList" class="bk-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Versiones anteriores de una canción -->
+<div class="modal-veil" id="histVeil">
+  <div class="modal glass narrow">
+    <div class="modal-head"><h3>Versiones anteriores</h3><button class="glass-btn icon-only" id="histClose" aria-label="Cerrar">✕</button></div>
+    <div class="modal-body" style="gap:10px;"><div id="histList" class="bk-list"></div></div>
+  </div>
+</div>
+
 <!-- Más opciones (celular) -->
 <div class="modal-veil" id="moreVeil">
   <div class="modal glass narrow">
@@ -1930,6 +2055,8 @@
     <div class="modal-body" id="moreList" style="gap:4px;">
       <button class="pick-item" id="mobileTheme" type="button">🌓&nbsp; Cambiar tema claro / oscuro</button>
       <button class="pick-item" id="mobileTools" type="button">🎼&nbsp; Metrónomo y afinador</button>
+      <button class="pick-item" id="mobileLib" type="button">🌐&nbsp; Biblioteca compartida</button>
+      <button class="pick-item" id="mobileBackup" type="button">🕘&nbsp; Copias de seguridad</button>
       <button class="pick-item" id="mobileImport" type="button">⬆&nbsp; Importar repertorio</button>
       <button class="pick-item" id="mobilePdf" type="button">📄&nbsp; Importar desde PDF</button>
       <button class="pick-item" id="mobileExport" type="button">⬇&nbsp; Exportar repertorio</button>
@@ -2412,12 +2539,47 @@ y agrega las [G]tuyas [Am]aquí.`
     return out.slice(0, 8);
   }
   function filterActive(){ return !!(filt.fav || filt.tag); }
+  /* búsqueda: ignora tildes y mayúsculas, acepta varias palabras y mira también la letra */
+  const nrm = s => String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const searchCache = new Map();
+  function searchIndex(s){
+    const stamp = (s.updatedAt || 0) + ":" + (s.body || "").length + ":" + s.title + "|" + (s.artist || "") + "|" + tagsOf(s).join(",");
+    let c = searchCache.get(s.id);
+    if(c && c.stamp === stamp) return c;
+    const parts = [];
+    (s.body || "").split("\n").forEach(l => {
+      if(/^\s*\{[^}]*\}\s*$/.test(l)) return;
+      const t = parseLine(l).lyric.trim(); if(t) parts.push(t);
+    });
+    const lyr = parts.join(" · ");
+    c = { stamp, head: nrm(s.title + " " + (s.artist || "") + " " + tagsOf(s).join(" ")), lyr, lyrN: lyr.split("").map(nrm).join("") };
+    searchCache.set(s.id, c);
+    return c;
+  }
+  const searchWords = q => nrm(q).split(/\s+/).filter(Boolean);
+  function songMatches(s, words){ if(!words.length) return true; const c = searchIndex(s); return words.every(w => c.head.includes(w) || c.lyrN.includes(w)); }
+  // fragmento de la letra donde aparece lo buscado (solo si no coincidió en título/artista/etiquetas)
+  function snippetFor(s, q){
+    const words = searchWords(q); if(!words.length) return "";
+    const c = searchIndex(s);
+    if(words.every(w => c.head.includes(w)) || c.lyrN.length !== c.lyr.length) return "";
+    let pos = -1;
+    words.forEach(w => { const i = c.lyrN.indexOf(w); if(i >= 0 && (pos < 0 || i < pos)) pos = i; });
+    if(pos < 0) return "";
+    const a = Math.max(0, pos - 30), b = Math.min(c.lyr.length, pos + 70), marks = [];
+    words.forEach(w => { let i = a; while((i = c.lyrN.indexOf(w, i)) >= 0 && i < b){ marks.push([i, i + w.length]); i += w.length; } });
+    marks.sort((x, y) => x[0] - y[0]);
+    let out = "", cur = a;
+    marks.forEach(([m0, m1]) => { if(m0 < cur) return; out += escapeHtml(c.lyr.slice(cur, m0)) + "<mark>" + escapeHtml(c.lyr.slice(m0, m1)) + "</mark>"; cur = m1; });
+    out += escapeHtml(c.lyr.slice(cur, b));
+    return (a > 0 ? "…" : "") + out + (b < c.lyr.length ? "…" : "");
+  }
   function activeSongs(filterText){
-    const q = (filterText||"").trim().toLowerCase();
+    const words = searchWords(filterText);
     return songs.filter(s => !s.trashedAt
       && (!filt.fav || s.fav)
       && (!filt.tag || tagsOf(s).some(t => tagKey(t) === filt.tag))
-      && (s.title.toLowerCase().includes(q) || (s.artist||"").toLowerCase().includes(q) || tagsOf(s).some(t => t.toLowerCase().includes(q))));
+      && songMatches(s, words));
   }
   function toggleFav(id){
     const s = songs.find(x => x.id === id); if(!s) return;
@@ -2481,7 +2643,7 @@ y agrega las [G]tuyas [Am]aquí.`
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Sonarium: un documento por cuaderno. Todo lo demás queda bloqueado.
+    // Sonarium: un documento por cuaderno. Lo que no aparece aquí queda bloqueado.
     match /cuadernos/{usuario} {
       allow get: if true;
       allow list: if false;
@@ -2499,6 +2661,34 @@ service cloud.firestore {
         && request.resource.data.sal == resource.data.sal
         && request.resource.data.verificador == resource.data.verificador
         && request.resource.data.datos is string && request.resource.data.datos.size() < 900000;
+    }
+
+    // Biblioteca compartida: cualquiera lee y puede publicar canciones nuevas (una por título+artista).
+    // Nadie puede editar ni borrar desde la app; los retiros se hacen desde la consola de Firebase.
+    match /biblioteca/{id} {
+      allow get: if true;
+      allow list: if request.query.limit <= 50;
+      allow update, delete: if false;
+      allow create: if id.matches('^[a-f0-9]{20}$')
+        && request.resource.data.keys().hasOnly(['titulo','artista','tono','cuerpo','etiquetas','tokens','autor','creado','derechos'])
+        && request.resource.data.titulo is string && request.resource.data.titulo.size() > 0 && request.resource.data.titulo.size() <= 120
+        && request.resource.data.artista is string && request.resource.data.artista.size() <= 160
+        && request.resource.data.tono is string && request.resource.data.tono.size() <= 12
+        && request.resource.data.cuerpo is string && request.resource.data.cuerpo.size() > 0 && request.resource.data.cuerpo.size() <= 20000
+        && request.resource.data.etiquetas is list && request.resource.data.etiquetas.size() <= 8
+        && request.resource.data.tokens is list && request.resource.data.tokens.size() <= 16
+        && request.resource.data.autor is string && request.resource.data.autor.size() <= 30
+        && request.resource.data.derechos == true
+        && request.resource.data.creado == request.time;
+    }
+
+    // Reportes de la biblioteca: solo se pueden crear (los lees tú en la consola).
+    match /reportes/{rid} {
+      allow read, update, delete: if false;
+      allow create: if request.resource.data.keys().hasOnly(['cancion','motivo','creado'])
+        && request.resource.data.cancion is string && request.resource.data.cancion.size() <= 40
+        && request.resource.data.motivo is string && request.resource.data.motivo.size() <= 300
+        && request.resource.data.creado == request.time;
     }
   }
 }`;
@@ -2795,7 +2985,7 @@ service cloud.firestore {
       let chordHtml = "";
       chords.forEach(c => {
         const shown = toNotation(transposeChord(normChord(c.text), shift));
-        chordHtml += `<span class="chord-tag" style="left:calc(${c.pos}ch / 0.875);">${escapeHtml(shown)}</span>`;
+        chordHtml += `<span class="chord-tag" data-ch="${escapeHtml(transposeChord(normChord(c.text), shift)).replace(/"/g, "&quot;")}" style="left:calc(${c.pos}ch / 0.875);">${escapeHtml(shown)}</span>`;
       });
       const lyricClass = lyric.trim() === "" ? "lyric-text faded" : "lyric-text";
       html += `<div class="song-line${chords.length ? "" : " nc"}">${chordHtml}<span class="${lyricClass}">${escapeHtml(lyric) || "&nbsp;"}</span></div>`;
@@ -2964,7 +3154,7 @@ service cloud.firestore {
     const acts = o.inSpace
       ? '<button data-act="unspace" class="d" title="Quitar del espacio">✕</button><button class="drag-handle" type="button" title="Arrastra para cambiar el orden" aria-label="Cambiar el orden">' + HANDLE_SVG + '</button>'
       : '<button data-act="fav" class="fav' + (s.fav ? ' on' : '') + '" title="' + (s.fav ? 'Quitar de favoritas' : 'Marcar como favorita') + '">' + (s.fav ? '★' : '☆') + '</button><button data-act="space" title="Agregar a un espacio temporal">⏱</button><button data-act="move" title="Mover a otra carpeta">📁</button><button data-act="del" class="d" title="Eliminar">✕</button>';
-    const sub = (o.path ? '<div class="path">' + escapeHtml(o.path) + '</div>' : "");
+    const sub = (o.snippet ? '<div class="snip">' + o.snippet + '</div>' : "") + (o.path ? '<div class="path">' + escapeHtml(o.path) + '</div>' : "");
     return '<div class="card song-card"' + (o.inSpace ? '' : ' draggable="true"') + ' data-id="' + attr(s.id) + '" style="--i:' + Math.min(i, 14) +
       ';--c:' + color + ';color:' + color + ';border-color:' + hexToRgba(color, 0.35) + ';">' +
       '<span class="dot" style="background:' + color + ';"></span><div class="glow" style="background:' + color + ';"></div>' +
@@ -3082,10 +3272,10 @@ service cloud.firestore {
     let html = "", i = 0;
 
     if(q || filterActive()){
-      const fl = filterActive() ? [] : folders.filter(f => f.name.toLowerCase().includes(q));
+      const fl = filterActive() ? [] : folders.filter(f => searchWords(q).every(w => nrm(f.name).includes(w)));
       const sl = activeSongs(q);
       fl.forEach(f => { html += folderCardHtml(f, i++); });
-      html += songsHtml(activeSongs(q), i, s => ({ path: pathLabel(effFolder(s)) }));
+      html += songsHtml(activeSongs(q), i, s => ({ path: pathLabel(effFolder(s)), snippet: snippetFor(s, q) }));
       if(!fl.length && !sl.length) html = '<div class="empty-hint">' + (filterActive() ? 'Ninguna canción coincide con ese filtro todavía.' : 'No hay carpetas ni canciones que coincidan con tu búsqueda.') + '</div>';
     } else if(loc.type === "space"){
       const sp = spaces.find(s => s.id === loc.id);
@@ -3509,7 +3699,7 @@ service cloud.firestore {
   }
   function renderSpaceSongs(){
     const q = document.getElementById("spSongsSearch").value.trim().toLowerCase();
-    const list = songs.filter(s => !s.trashedAt && (!q || s.title.toLowerCase().includes(q) || (s.artist || "").toLowerCase().includes(q)))
+    const list = songs.filter(s => !s.trashedAt && songMatches(s, searchWords(q)))
       .sort((a, b) => a.title.localeCompare(b.title, "es"));
     document.getElementById("spSongsList").innerHTML = list.length ? list.map(s =>
       '<label class="check-row"><input type="checkbox" data-sp="' + attr(s.id) + '"' + (spPick.selected.has(s.id) ? " checked" : "") + '>' +
@@ -3627,8 +3817,61 @@ service cloud.firestore {
     return '<div class="av-grid">' + AVATARS.map(a =>
       '<button type="button" class="av-opt' + (a.id === sel ? " on" : "") + '" data-av="' + a.id + '" style="background:' + avGrad(a) + '" aria-label="Avatar ' + a.id + '">' + a.e + '</button>').join("") + '</div>';
   }
+  /* ícono de la app (pantalla de inicio / app instalada): cuadrado completo con el avatar */
+  function avatarSquare(a, size){
+    const c = document.createElement("canvas"); c.width = c.height = size;
+    const x = c.getContext("2d");
+    const g = x.createLinearGradient(0, 0, size, size); g.addColorStop(0, a.a); g.addColorStop(1, a.b);
+    x.fillStyle = g; x.fillRect(0, 0, size, size);
+    x.font = Math.round(size * 0.5) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+    x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(a.e, size / 2, size * 0.54);
+    return c.toDataURL("image/png");
+  }
+  const appIcon = { touch:null, manifestHref:null, baseManifest:null, blob:null, key:"" };
+  async function applyAppIcons(a){
+    const key = a ? a.id : "";
+    if(key === appIcon.key) return;
+    appIcon.key = key;
+    const touch = document.querySelector('link[rel="apple-touch-icon"]:not(#dynApple)');
+    const man = document.querySelector('link[rel="manifest"]');
+    if(!appIcon.touch && touch) appIcon.touch = touch.getAttribute("href");
+    if(!appIcon.manifestHref && man) appIcon.manifestHref = man.getAttribute("href");
+    const dyn = document.getElementById("dynApple");
+    if(!a){   // sin avatar: vuelven los íconos de Sonarium
+      if(dyn) dyn.remove();
+      if(touch && appIcon.touch) touch.setAttribute("href", appIcon.touch);
+      if(man && appIcon.manifestHref) man.setAttribute("href", appIcon.manifestHref);
+      if(appIcon.blob){ URL.revokeObjectURL(appIcon.blob); appIcon.blob = null; }
+      return;
+    }
+    try{
+      const i180 = avatarSquare(a, 180), i192 = avatarSquare(a, 192), i512 = avatarSquare(a, 512);
+      if(touch) touch.setAttribute("href", i180);
+      else if(!dyn){ const l = document.createElement("link"); l.rel = "apple-touch-icon"; l.id = "dynApple"; l.href = i180; document.head.appendChild(l); }
+      if(!man) return;
+      if(!appIcon.baseManifest){
+        try{ const r = await fetch(appIcon.manifestHref, { cache:"no-cache" }); appIcon.baseManifest = r.ok ? await r.json() : {}; }
+        catch(e){ appIcon.baseManifest = {}; }
+      }
+      if(appIcon.key !== key) return;   // cambió el avatar mientras tanto
+      const base = appIcon.baseManifest || {}, here = location.href.split("#")[0];
+      const abs = (u, d) => { try{ return new URL(u || d, new URL(appIcon.manifestHref, location.href)).href; }catch(e){ return here; } };
+      const m = Object.assign({ name:"Sonarium", short_name:"Sonarium", display:"standalone", background_color:"#0c1024", theme_color:"#0c1024" }, base, {
+        start_url: abs(base.start_url, here), scope: abs(base.scope, "./"), id: abs(base.id, base.start_url || here),
+        icons: [
+          { src:i192, sizes:"192x192", type:"image/png", purpose:"any" }, { src:i512, sizes:"512x512", type:"image/png", purpose:"any" },
+          { src:i192, sizes:"192x192", type:"image/png", purpose:"maskable" }, { src:i512, sizes:"512x512", type:"image/png", purpose:"maskable" }
+        ]
+      });
+      const url = URL.createObjectURL(new Blob([JSON.stringify(m)], { type:"application/manifest+json" }));
+      man.setAttribute("href", url);
+      if(appIcon.blob) URL.revokeObjectURL(appIcon.blob);
+      appIcon.blob = url;
+    }catch(e){}
+  }
   let iconStash = null, iconKey = "";
   function applyFavicon(a){
+    applyAppIcons(a);
     const key = a ? a.id : "";
     if(key === iconKey) return;
     iconKey = key;
@@ -3856,6 +4099,7 @@ service cloud.firestore {
     if(editingId){
       const idx = songs.findIndex(s => s.id === editingId);
       if(!data.tags) delete songs[idx].tags;
+      histPush(songs[idx], data);
       songs[idx] = Object.assign(songs[idx], data);
       persist();
       closeModal();
@@ -4014,6 +4258,571 @@ service cloud.firestore {
   });
 
 
+  /* ---------------- diagramas de acordes (guitarra, ukulele, piano) ---------------- */
+  const CD = (function(){
+    const PCS = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+    const pcOf = n => { const m = /^([A-G])(#|b)?$/.exec(n); return m ? (PCS[m[1]] + (m[2] === "#" ? 1 : m[2] === "b" ? -1 : 0) + 12) % 12 : null; };
+    function parse(name){
+      const parts = String(name).trim().split("/");
+      const m = /^([A-G](?:#|b)?)(.*)$/.exec(parts[0]); if(!m) return null;
+      const root = pcOf(m[1]); if(root == null) return null;
+      let bass = root;
+      if(parts[1] !== undefined){ const b = pcOf(parts[1].trim()); if(b == null) return null; bass = b; }
+      let r = m[2].replace(/[()\s]/g, "");
+      let iv = null, min = false, dim = false, aug = false, half = false, sus = null, seventh = null;
+      const add = [], flats = {};
+      if(r === "5") iv = [0, 7];
+      else {
+        let mm = /^(m(?!aj)|min|-)/.exec(r); if(mm){ min = true; r = r.slice(mm[0].length); }
+        if(/^(dim|°|o)/.test(r)){ dim = true; r = r.replace(/^(dim|°|o)/, ""); }
+        else if(/^(aug|\+)/.test(r)){ aug = true; r = r.replace(/^(aug|\+)/, ""); }
+        else if(/^ø/.test(r)){ half = true; r = r.slice(1); }
+        let mj = /^(maj|M|Δ)(7|9|11|13)?/.exec(r);
+        if(mj){ r = r.slice(mj[0].length); seventh = 11; const e = mj[2]; if(e >= 9) add.push(2); if(e >= 11) add.push(5); if(e >= 13) add.push(9); }
+        else { const nm = /^(7|9|11|13)/.exec(r); if(nm){ r = r.slice(nm[0].length); seventh = (dim && !half && nm[1] === "7") ? 9 : 10; const e = +nm[1]; if(e >= 9) add.push(2); if(e >= 11) add.push(5); if(e >= 13) add.push(9); } }
+        let guard = 0;
+        while(r && guard++ < 8){
+          let t;
+          if((t = /^sus2/.exec(r))) sus = 2;
+          else if((t = /^sus4?/.exec(r))) sus = 5;
+          else if((t = /^add(9|2)/.exec(r))) add.push(2);
+          else if((t = /^add(11|4)/.exec(r))) add.push(5);
+          else if((t = /^6/.exec(r))) add.push(9);
+          else if((t = /^b5/.exec(r))) flats.five = 6;
+          else if((t = /^#5/.exec(r))) flats.five = 8;
+          else if((t = /^b9/.exec(r))) add.push(1);
+          else if((t = /^#9/.exec(r))) add.push(3);
+          else if((t = /^#11/.exec(r))) add.push(6);
+          else if((t = /^b13/.exec(r))) add.push(8);
+          else if((t = /^(7|9)/.exec(r)) && seventh == null) { seventh = 10; if(t[1] === "9") add.push(2); }
+          else return null;
+          r = r.slice(t[0].length);
+        }
+        if(r) return null;
+        const third = sus != null ? sus : (min || dim || half ? 3 : 4);
+        const five = flats.five != null ? flats.five : (dim || half ? 6 : aug ? 8 : 7);
+        iv = [0, third, five];
+        if(seventh != null) iv.push(seventh);
+        add.forEach(x => iv.push(x));
+        iv = iv.filter((x, i) => iv.indexOf(x) === i);
+        // la quinta es opcional cuando el acorde ya tiene 4 o más notas
+        var fifthOpt = iv.length >= 4 ? five : null;
+      }
+      const pcs = new Set(iv.map(x => (root + x) % 12));
+      const must = new Set(pcs);
+      if(typeof fifthOpt !== "undefined" && fifthOpt != null) must.delete((root + fifthOpt) % 12);
+      if(iv.length === 2){ /* power chord: quinta incluida */ }
+      pcs.add(bass); must.add(root);
+      return { root, bass, pcs, must, iv: iv.map(x => (root + x) % 12), slash: bass !== root };
+    }
+    const TUN = { guitar: [4, 9, 2, 7, 11, 4], ukulele: [7, 0, 4, 9] };
+    function evaluate(f, tun, info, instr){
+      const n = tun.length, snd = [];
+      for(let i = 0; i < n; i++) if(f[i] >= 0) snd.push(i);
+      if(snd.length < (instr === "guitar" ? 4 : 3)) return null;
+      for(let k = 1; k < snd.length; k++) if(snd[k] !== snd[k-1] + 1) return null;
+      const notes = new Set(); let lowPc = null;
+      for(const i of snd){ const pc = (tun[i] + f[i]) % 12; if(!info.pcs.has(pc)) return null; notes.add(pc); if(lowPc === null) lowPc = pc; }
+      for(const x of info.must) if(!notes.has(x)) return null;
+      if(instr === "guitar" && lowPc !== info.bass) return null;
+      const fr = snd.map(i => f[i]).filter(x => x > 0);
+      const minF = fr.length ? Math.min(...fr) : 0, maxF = fr.length ? Math.max(...fr) : 0;
+      let fingers = fr.length, barre = null;
+      if(minF > 0){
+        const at = snd.filter(i => f[i] === minF);
+        if(at.length >= 3 || (at.length === 2 && at[0] === snd[0])){
+          const a = at[0], b = at[at.length - 1];
+          for(let i = a; i <= b; i++) if(f[i] === 0) return null;
+          // la cejilla cubre desde la primera cuerda con ese traste; las cuerdas bajas silenciadas a su izquierda no cuentan
+          barre = { a, b, f: minF };
+          fingers = 1 + fr.filter(x => x > minF).length;
+        }
+      }
+      if(fingers > 4) return null;
+      const opens = snd.filter(i => f[i] === 0).length, mutes = n - snd.length;
+      const score = snd.length * 1.6 - mutes * 0.4 + opens * 0.9 - minF * 0.9 - fingers * 0.4 - (maxF - minF) * 0.3 + (barre ? -0.8 : 0);
+      return { frets: f.slice(), score, minF, maxF, barre };
+    }
+    function voicings(info, instr, limit){
+      const tun = TUN[instr], n = tun.length, found = new Map();
+      for(let w = 1; w <= 11; w++){
+        const f = new Array(n);
+        (function go(i){
+          if(i === n){ const r = evaluate(f, tun, info, instr); if(r){ const k = r.frets.join(","); if(!found.has(k)) found.set(k, r); } return; }
+          f[i] = -1; go(i + 1);
+          if(w === 1){ f[i] = 0; go(i + 1); }
+          for(let x = w; x <= w + 3; x++){ f[i] = x; go(i + 1); }
+        })(0);
+      }
+      return [...found.values()].sort((a, b) => b.score - a.score).slice(0, limit || 6);
+    }
+    const cache = new Map();
+    function forChord(name, instr){
+      const k = instr + "|" + name;
+      if(cache.has(k)) return cache.get(k);
+      const info = parse(name); const v = info ? voicings(info, instr, 6) : [];
+      cache.set(k, v); return v;
+    }
+    /* ---- dibujo ---- */
+    function fretSvg(v, instr){
+      const n = TUN[instr].length, gap = instr === "guitar" ? 20 : 26, L = 26, T = 30, RH = 22, rows = 5;
+      const base = v.maxF <= 5 ? 1 : v.minF;
+      const W = L + (n - 1) * gap + 18, H = T + rows * RH + 8;
+      let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" fill="none" stroke="currentColor" stroke-width="1.2">`;
+      for(let r = 0; r <= rows; r++) s += `<line x1="${L}" y1="${T + r * RH}" x2="${L + (n - 1) * gap}" y2="${T + r * RH}" opacity="${r === 0 && base === 1 ? 1 : .45}" stroke-width="${r === 0 && base === 1 ? 3.4 : 1.2}"/>`;
+      for(let i = 0; i < n; i++) s += `<line x1="${L + i * gap}" y1="${T}" x2="${L + i * gap}" y2="${T + rows * RH}" opacity=".65"/>`;
+      if(base > 1) s += `<text x="${L - 8}" y="${T + RH / 2 + 4}" text-anchor="end" fill="currentColor" stroke="none" font-size="12" font-weight="700">${base}</text>`;
+      if(v.barre){ const b = v.barre, y = T + (b.f - base) * RH + RH / 2; s += `<rect x="${L + b.a * gap - 7}" y="${y - 7}" width="${(b.b - b.a) * gap + 14}" height="14" rx="7" class="cd-dot"/>`; }
+      v.frets.forEach((f, i) => {
+        const x = L + i * gap;
+        if(f < 0) s += `<path d="M${x - 4} ${T - 16}l8 8m0 -8l-8 8" opacity=".8"/>`;
+        else if(f === 0) s += `<circle cx="${x}" cy="${T - 12}" r="4.2" opacity=".85"/>`;
+        else s += `<circle cx="${x}" cy="${T + (f - base) * RH + RH / 2}" r="7" class="cd-dot"/>`;
+      });
+      return s + "</svg>";
+    }
+    function pianoSvg(info){
+      const WH = [0, 2, 4, 5, 7, 9, 11], kw = 17, N = 14, H = 78;
+      const on = new Set(); info.iv.forEach(pc => { let a = ((pc - info.root) + 12) % 12 + info.root % 12; if(a >= 24) a -= 12; on.add(a); });
+      // posición absoluta de la raíz dentro del primer octavo; las demás notas ascienden desde ella
+      on.clear(); const r0 = info.root;
+      info.iv.forEach(pc => { on.add(r0 + ((pc - r0 + 12) % 12)); });
+      const bassAbs = info.bass;
+      let s = `<svg viewBox="0 0 ${kw * N + 2} ${H + 2}" width="${kw * N + 2}" height="${H + 2}" role="img" stroke="currentColor" stroke-width="1">`;
+      let wi = 0; const blacks = [];
+      for(let a = 0; a < 24; a++){
+        const pc = a % 12;
+        if(WH.includes(pc)){
+          const x = 1 + wi * kw, isRoot = a === r0, isOn = on.has(a) || (info.slash && a === bassAbs && false);
+          s += `<rect x="${x}" y="1" width="${kw}" height="${H}" rx="2.5" class="cd-wk${isOn ? (isRoot ? " root" : " on") : ""}"/>`;
+          wi++;
+        } else blacks.push({ a, x: 1 + wi * kw - 5.5 });
+      }
+      blacks.forEach(b => { const isRoot = b.a === r0; s += `<rect x="${b.x}" y="1" width="11" height="${H * 0.6}" rx="2" class="cd-bk${on.has(b.a) ? (isRoot ? " root" : " on") : ""}"/>`; });
+      return s + "</svg>";
+    }
+    return { parse, forChord, fretSvg, pianoSvg, TUN };
+  })();
+
+  const chordPop = document.createElement("div");
+  chordPop.id = "chordPop"; chordPop.className = "chord-pop glass"; chordPop.hidden = true;
+  chordPop.setAttribute("role", "dialog"); chordPop.setAttribute("aria-label", "Diagrama de acorde");
+  document.body.appendChild(chordPop);
+  const cpState = { name: "", idx: 0 };
+  const cpInstr = () => { try{ const v = localStorage.getItem("sonarium.instr"); return v === "ukulele" || v === "piano" ? v : "guitar"; }catch(e){ return "guitar"; } };
+  function closeChordPop(){ chordPop.hidden = true; document.querySelectorAll(".chord-tag.sel").forEach(n => n.classList.remove("sel")); }
+  function paintChordPop(){
+    const instr = cpInstr(), name = cpState.name, info = CD.parse(name);
+    const tabs = [["guitar", "Guitarra"], ["ukulele", "Ukulele"], ["piano", "Piano"]].map(([k, l]) => `<button type="button" class="cp-tab${k === instr ? " on" : ""}" data-i="${k}">${l}</button>`).join("");
+    let body = "", nav = "";
+    if(!info) body = '<p class="cp-none">No tengo un diagrama para este acorde.</p>';
+    else if(instr === "piano") body = '<div class="cp-fig">' + CD.pianoSvg(info) + "</div>";
+    else {
+      const list = CD.forChord(name, instr);
+      if(!list.length) body = '<p class="cp-none">No encontré una digitación cómoda para este acorde.</p>';
+      else {
+        cpState.idx = ((cpState.idx % list.length) + list.length) % list.length;
+        body = '<div class="cp-fig">' + CD.fretSvg(list[cpState.idx], instr) + "</div>";
+        if(list.length > 1) nav = `<div class="cp-nav"><button type="button" data-n="-1" aria-label="Posición anterior">‹</button><span>Posición ${cpState.idx + 1} de ${list.length}</span><button type="button" data-n="1" aria-label="Posición siguiente">›</button></div>`;
+      }
+    }
+    const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+    const notes = info ? info.iv.map(pc => toNotation(NAMES[pc])).join(" · ") : "";
+    chordPop.innerHTML = `<div class="cp-head"><b>${escapeHtml(toNotation(name))}</b><button type="button" class="cp-x" aria-label="Cerrar">✕</button></div><div class="cp-tabs">${tabs}</div>${body}${nav}${notes ? `<div class="cp-notes">Notas: ${escapeHtml(notes)}</div>` : ""}`;
+  }
+  function placeChordPop(anchor){
+    chordPop.hidden = false;
+    if(window.innerWidth <= 640){ chordPop.style.left = ""; chordPop.style.top = ""; return; }
+    const r = anchor.getBoundingClientRect(), w = chordPop.offsetWidth, h = chordPop.offsetHeight;
+    let x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+    let y = r.bottom + 8; if(y + h > window.innerHeight - 8) y = Math.max(8, r.top - h - 8);
+    chordPop.style.left = x + "px"; chordPop.style.top = y + "px";
+  }
+  el.songRender.addEventListener("click", e => {
+    const t = e.target.closest(".chord-tag");
+    if(!t || !t.dataset.ch || document.body.classList.contains("stage")) return;
+    if(!chordPop.hidden && cpState.name === t.dataset.ch && t.classList.contains("sel")){ closeChordPop(); return; }
+    document.querySelectorAll(".chord-tag.sel").forEach(n => n.classList.remove("sel"));
+    t.classList.add("sel"); cpState.name = t.dataset.ch; cpState.idx = 0;
+    paintChordPop(); placeChordPop(t);
+  });
+  chordPop.addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    if(b.classList.contains("cp-x")) return closeChordPop();
+    if(b.dataset.i){ try{ localStorage.setItem("sonarium.instr", b.dataset.i); }catch(_){} cpState.idx = 0; const a = document.querySelector(".chord-tag.sel"); paintChordPop(); if(a) placeChordPop(a); }
+    else if(b.dataset.n){ cpState.idx += +b.dataset.n; paintChordPop(); }
+  });
+  document.addEventListener("click", e => { if(!chordPop.hidden && !e.composedPath().includes(chordPop) && !e.target.closest(".chord-tag")) closeChordPop(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !chordPop.hidden) closeChordPop(); });
+  window.addEventListener("scroll", () => { if(!chordPop.hidden && window.innerWidth > 640) closeChordPop(); }, { passive: true, capture: true });
+
+  /* ---------------- modo proyección (letra sin acordes, para proyector o TV) ---------------- */
+  const PROJ_RECV = /[?&]proyeccion\b/.test(location.search);
+  let projBC = null; try{ if("BroadcastChannel" in window) projBC = new BroadcastChannel("sonarium-proj"); }catch(e){}
+  const proj = { on:false, slides:[], i:0, black:false, scale:1, remote:false, hideT:0 };
+  const projEl = document.createElement("div");
+  projEl.id = "projVeil"; projEl.hidden = true; if(PROJ_RECV) projEl.classList.add("recv");
+  projEl.innerHTML = '<div class="pj-stage"><div class="pj-label"></div><div class="pj-text"></div></div><div class="pj-foot"></div>'
+    + '<div class="pj-ctl glass"><button data-a="prev" title="Anterior (←)" aria-label="Anterior">‹</button><button data-a="next" title="Siguiente (→ o espacio)" aria-label="Siguiente">›</button>'
+    + '<button data-a="black" title="Pantalla en negro (B)" aria-label="Pantalla en negro">⬛</button><button data-a="smaller" title="Letra más pequeña (−)" aria-label="Letra más pequeña">A−</button><button data-a="bigger" title="Letra más grande (+)" aria-label="Letra más grande">A+</button>'
+    + '<button data-a="win" title="Abrir en otra ventana (para el proyector)" aria-label="Abrir en otra ventana">🪟</button><button data-a="close" title="Cerrar (Esc)" aria-label="Cerrar">✕</button></div>';
+  document.body.appendChild(projEl);
+  function projSlides(song){
+    const out = [{ label:"", title:true, lines:[song.title].concat(song.artist ? [artistLabel(song.artist)] : []) }];
+    let cur = [], inCh = false, label = "";
+    const flush = () => { for(let k = 0; k < cur.length; k += 4) out.push({ label: k === 0 && inCh ? label : "", lines: cur.slice(k, k + 4) }); cur = []; };
+    splitInlineDirectives((song.body || "").split("\n")).forEach(l => {
+      const dm = /^\s*\{\s*([a-z_]+)\s*(?::\s*(.*?))?\s*\}\s*$/i.exec(l);
+      if(dm){
+        const d = dm[1].toLowerCase();
+        if(d === "soc" || d === "start_of_chorus"){ flush(); inCh = true; label = (dm[2] || "Coro").trim(); }
+        else if(d === "eoc" || d === "end_of_chorus"){ flush(); inCh = false; label = ""; }
+        return;
+      }
+      const t = parseLine(l).lyric.trim();
+      if(!t){ if(!inCh) flush(); return; }
+      cur.push(t);
+    });
+    flush();
+    return out;
+  }
+  function projFit(){
+    const tx = projEl.querySelector(".pj-text"), box = projEl.querySelector(".pj-stage");
+    let px = Math.min(innerWidth * .062, innerHeight * .13) * proj.scale;
+    tx.style.fontSize = px + "px";
+    let n = 0;
+    while(n++ < 45 && px > 14 && (tx.getBoundingClientRect().height > box.clientHeight * .8 || tx.scrollWidth > box.clientWidth)){ px *= .94; tx.style.fontSize = px + "px"; }
+  }
+  function projPaint(s, foot){
+    projEl.querySelector(".pj-label").textContent = s.label || "";
+    const tx = projEl.querySelector(".pj-text");
+    tx.className = "pj-text" + (s.title ? " title" : "");
+    tx.innerHTML = s.lines.map((l, k) => `<div${s.title && k ? ' class="sub"' : ""}>${escapeHtml(l)}</div>`).join("");
+    projEl.querySelector(".pj-foot").textContent = foot || "";
+    projEl.classList.toggle("black", proj.black);
+    projFit();
+  }
+  function projSend(extra){
+    if(!projBC || !proj.remote) return;
+    const s = proj.slides[proj.i]; if(!s) return;
+    try{ projBC.postMessage(Object.assign({ t:"state", label:s.label, lines:s.lines, title:!!s.title, black:proj.black, scale:proj.scale }, extra || {})); }catch(e){}
+  }
+  function projRender(){
+    const s = proj.slides[proj.i]; if(!s) return;
+    projPaint(s, (proj.i + 1) + " / " + proj.slides.length);
+    projSend();
+  }
+  function projGo(d){ const n = Math.max(0, Math.min(proj.slides.length - 1, proj.i + d)); if(n !== proj.i){ proj.i = n; proj.black = false; projRender(); } }
+  function projCtl(){ projEl.classList.add("ctl"); clearTimeout(proj.hideT); proj.hideT = setTimeout(() => projEl.classList.remove("ctl"), 2600); }
+  function projFull(){ try{ if(document.fullscreenElement) document.exitFullscreen(); else projEl.requestFullscreen && projEl.requestFullscreen(); }catch(e){} }
+  function openProj(){
+    const song = songs.find(s => s.id === activeId); if(!song) return;
+    proj.slides = projSlides(song); proj.i = 0; proj.black = false; proj.on = true;
+    projEl.hidden = false; projEl.classList.remove("recv"); document.body.classList.add("projecting");
+    try{ projEl.requestFullscreen && projEl.requestFullscreen(); }catch(e){}
+    projRender(); projCtl();
+  }
+  function closeProj(){
+    if(!proj.on) return;
+    proj.on = false; projEl.hidden = true; document.body.classList.remove("projecting");
+    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+    if(projBC && proj.remote){ try{ projBC.postMessage({ t:"end" }); }catch(e){} }
+  }
+  function openProjWindow(){
+    const w = window.open(location.pathname + "?proyeccion=1", "sonariumProj", "popup,width=1024,height=640");
+    if(!w){ toast("El navegador bloqueó la ventana. Permite ventanas emergentes para este sitio."); return; }
+    proj.remote = true;
+    toast("Ventana abierta: arrástrala al proyector y pulsa F para pantalla completa");
+    setTimeout(projSend, 900);
+  }
+  projEl.addEventListener("click", e => {
+    const b = e.target.closest("button[data-a]");
+    if(b){
+      const a = b.dataset.a;
+      if(a === "prev") projGo(-1); else if(a === "next") projGo(1);
+      else if(a === "black"){ proj.black = !proj.black; projRender(); }
+      else if(a === "smaller" || a === "bigger"){ proj.scale = Math.max(.5, Math.min(1.6, proj.scale + (a === "bigger" ? .1 : -.1))); projRender(); }
+      else if(a === "win") openProjWindow(); else if(a === "close") closeProj();
+      projCtl(); return;
+    }
+    if(PROJ_RECV) return;
+    if(e.target.closest(".pj-ctl")) return;
+    projGo(e.clientX > innerWidth * .4 ? 1 : -1); projCtl();
+  });
+  projEl.addEventListener("mousemove", projCtl);
+  projEl.addEventListener("touchstart", projCtl, { passive:true });
+  window.addEventListener("resize", () => { if(!projEl.hidden) projFit(); });
+  document.addEventListener("keydown", e => {
+    if(projEl.hidden) return;
+    const k = e.key; let used = true;
+    if(k === "Escape"){ PROJ_RECV ? projFull() : closeProj(); }
+    else if(PROJ_RECV){ if(k === "f" || k === "F") projFull(); else used = false; }
+    else if(k === "ArrowRight" || k === " " || k === "PageDown" || k === "Enter" || k === "ArrowDown") projGo(1);
+    else if(k === "ArrowLeft" || k === "PageUp" || k === "Backspace" || k === "ArrowUp") projGo(-1);
+    else if(k === "Home"){ proj.i = 0; projRender(); } else if(k === "End"){ proj.i = proj.slides.length - 1; projRender(); }
+    else if(k === "b" || k === "B" || k === "."){ proj.black = !proj.black; projRender(); }
+    else if(k === "f" || k === "F") projFull();
+    else if(k === "+" || k === "=" || k === "-"){ proj.scale = Math.max(.5, Math.min(1.6, proj.scale + (k === "-" ? -.1 : .1))); projRender(); }
+    else used = false;
+    if(used){ e.preventDefault(); e.stopImmediatePropagation(); projCtl(); }
+  }, true);
+  if(PROJ_RECV){
+    document.body.classList.add("projwin"); projEl.hidden = false; proj.on = true;
+    projPaint({ label:"", title:true, lines:["Sonarium", "Esperando la letra…"] }, "");
+    projEl.addEventListener("dblclick", projFull);
+    if(projBC){
+      projBC.onmessage = ev => {
+        const d = ev.data || {};
+        if(d.t === "state"){ proj.black = !!d.black; proj.scale = d.scale || 1; projPaint({ label:d.label, title:d.title, lines:d.lines }, ""); }
+        else if(d.t === "end") projPaint({ label:"", title:true, lines:["Sonarium"] }, "");
+      };
+      projBC.postMessage({ t:"hello" });
+    }
+  } else if(projBC){
+    projBC.onmessage = ev => { if(ev.data && ev.data.t === "hello" && proj.on){ proj.remote = true; projSend(); } };
+  }
+  const projBtn = document.getElementById("projBtn");
+  if(projBtn) projBtn.addEventListener("click", openProj);
+
+  /* ---------------- respaldo automático e historial de versiones (solo en este dispositivo) ---------------- */
+  const BK = { db:null, last:0, lastData:"", timer:0 };
+  function bkOpen(){
+    if(BK.db) return Promise.resolve(BK.db);
+    return new Promise(res => {
+      if(!window.indexedDB) return res(null);
+      let rq; try{ rq = indexedDB.open("sonarium-respaldo", 1); }catch(e){ return res(null); }
+      rq.onupgradeneeded = () => { const d = rq.result; d.createObjectStore("snaps", { keyPath:"at" }); d.createObjectStore("hist", { keyPath:"id" }); };
+      rq.onsuccess = () => { BK.db = rq.result; res(BK.db); };
+      rq.onerror = rq.onblocked = () => res(null);
+    });
+  }
+  function bkTx(store, mode, fn){
+    return bkOpen().then(db => !db ? null : new Promise(res => {
+      let out; try{
+        const tx = db.transaction(store, mode), st = tx.objectStore(store);
+        out = fn(st);
+        tx.oncomplete = () => res(out && "result" in out ? out.result : out);
+        tx.onerror = tx.onabort = () => res(null);
+      }catch(e){ res(null); }
+    }));
+  }
+  const bkAll = () => bkTx("snaps", "readonly", st => st.getAll()).then(r => (r || []).sort((a, b) => b.at - a.at));
+  function bkPayload(){ return JSON.stringify({ songs, folders, spaces }); }
+  function bkPrune(){
+    return bkAll().then(list => {
+      const keep = new Set(), day = {}, now = Date.now();
+      let recent = 0, manual = 0;
+      list.forEach(s => {
+        const d = new Date(s.at).toDateString();
+        if(s.kind !== "auto"){ if(manual++ < 12) keep.add(s.at); return; }
+        if(now - s.at < DAY_MS){ if(recent++ < 12) keep.add(s.at); }
+        else if(now - s.at < 14 * DAY_MS && !day[d]){ day[d] = 1; keep.add(s.at); }
+      });
+      return bkTx("snaps", "readwrite", st => { list.forEach(s => { if(!keep.has(s.at)) st.delete(s.at); }); });
+    });
+  }
+  function bkSnap(kind, label){
+    const data = bkPayload();
+    if(kind === "auto" && data === BK.lastData) return Promise.resolve(false);
+    if(!songs.length && kind === "auto") return Promise.resolve(false);
+    const rec = { at: Date.now(), kind, label: label || "", ns: songs.filter(s => !s.trashedAt).length, nf: folders.length, ne: spaces.length, data };
+    BK.last = rec.at; BK.lastData = data;
+    return bkTx("snaps", "readwrite", st => st.put(rec)).then(() => bkPrune()).then(() => true);
+  }
+  function bkSoon(){
+    clearTimeout(BK.timer);
+    BK.timer = setTimeout(() => { if(Date.now() - BK.last >= 15 * 60000) bkSnap("auto"); }, 25000);
+  }
+  document.addEventListener("visibilitychange", () => { if(document.hidden && Date.now() - BK.last >= 2 * 60000) bkSnap("auto"); });
+  const _persist0 = persist; persist = function(){ const r = _persist0.apply(this, arguments); bkSoon(); return r; };
+  setTimeout(() => { bkAll().then(l => { BK.last = l.length ? l[0].at : 0; if(!l.length || Date.now() - BK.last > 6 * 3600e3) bkSnap("auto", "al abrir"); else BK.lastData = l[0].data; }); }, 6000);
+
+  const fmtWhen = at => { const d = new Date(at); return d.toLocaleDateString("es", { day:"numeric", month:"short" }) + " · " + d.toLocaleTimeString("es", { hour:"2-digit", minute:"2-digit" }); };
+  const bkVeil = document.getElementById("backupVeil"), bkList = document.getElementById("backupList");
+  function bkRender(){
+    bkAll().then(list => {
+      bkList.innerHTML = list.length ? list.map(s => `<div class="bk-row"><div class="bk-info"><b>${escapeHtml(fmtWhen(s.at))}</b><small>${s.ns} canciones · ${s.nf} carpetas · ${s.ne} espacios${s.kind === "auto" ? (s.label ? " · " + escapeHtml(s.label) : "") : " · " + escapeHtml(s.label || "copia manual")}</small></div><button class="glass-btn" data-bk="dl" data-at="${s.at}" title="Descargar esta copia">⬇</button><button class="glass-btn" data-bk="rs" data-at="${s.at}">Restaurar</button></div>`).join("")
+        : '<p class="bk-empty">Todavía no hay copias. Se crean solas mientras usas Sonarium.</p>';
+    });
+  }
+  function openBackups(){ bkVeil.classList.add("open"); bkRender(); }
+  document.getElementById("backupClose").addEventListener("click", () => bkVeil.classList.remove("open"));
+  bkVeil.addEventListener("click", e => { if(e.target === bkVeil) bkVeil.classList.remove("open"); });
+  document.getElementById("backupNow").addEventListener("click", () => { BK.lastData = ""; bkSnap("manual", "copia manual").then(() => { bkRender(); toast("Copia guardada"); }); });
+  bkList.addEventListener("click", async e => {
+    const b = e.target.closest("button[data-bk]"); if(!b) return;
+    const at = +b.dataset.at, snap = (await bkAll()).find(s => s.at === at); if(!snap) return;
+    if(b.dataset.bk === "dl"){
+      const blob = new Blob([snap.data], { type:"application/json" }), a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = "sonarium-copia-" + new Date(at).toISOString().slice(0, 16).replace(/[:T]/g, "-") + ".json";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); return;
+    }
+    const ok = await askDialog({ title:"¿Restaurar esta copia?", text:"Tu repertorio volverá a como estaba el " + fmtWhen(at) + " (" + snap.ns + " canciones).", extra:"Antes de restaurar guardo una copia de cómo está ahora, por si cambias de opinión.", ok:"Restaurar" });
+    if(!ok) return;
+    await bkSnap("manual", "antes de restaurar");
+    let st; try{ st = JSON.parse(snap.data); }catch(err){ toast("Esa copia está dañada"); return; }
+    const now = Date.now(), ids = { s:new Set((st.songs || []).map(x => x.id)), f:new Set((st.folders || []).map(x => x.id)), e:new Set((st.spaces || []).map(x => x.id)) };
+    const gone = [];
+    [["s", songs], ["f", folders], ["e", spaces]].forEach(([k, arr]) => arr.forEach(o => { if(!ids[k].has(o.id)) gone.push({ k, id:o.id, at:now }); }));
+    const T = [["s", st.songs || []], ["f", st.folders || []], ["e", st.spaces || []]];
+    T.forEach(([, arr]) => arr.forEach(o => { o.updatedAt = now; }));
+    const keepTombs = tombs.filter(t => !(ids[t.k] && ids[t.k].has(t.id)));
+    applyState({ songs: st.songs || [], folders: st.folders || [], spaces: st.spaces || [], tombs: keepTombs.concat(gone), meta });
+    persist();
+    bkVeil.classList.remove("open");
+    goHome(); toast("Copia restaurada");
+  });
+  document.getElementById("backupBtn").addEventListener("click", openBackups);
+  document.getElementById("mobileBackup").addEventListener("click", openBackups);
+
+  /* historial de versiones de una canción */
+  function histPush(old, next){
+    if(!old || !old.id) return;
+    const same = ["title", "artist", "key", "body"].every(k => (old[k] || "") === (next[k] || ""));
+    if(same) return;
+    const ver = { at: Date.now(), title: old.title, artist: old.artist || "", key: old.key || "", body: old.body || "" };
+    bkTx("hist", "readwrite", st => {
+      const rq = st.get(old.id);
+      rq.onsuccess = () => {
+        const rec = rq.result || { id: old.id, list: [] };
+        if(rec.list[0] && ver.at - rec.list[0].at < 2 * 60000) rec.list[0] = ver; else rec.list.unshift(ver);
+        rec.list = rec.list.slice(0, 25);
+        st.put(rec);
+      };
+    });
+  }
+  const histVeil = document.getElementById("histVeil"), histList = document.getElementById("histList");
+  document.getElementById("histBtn").addEventListener("click", () => {
+    if(!editingId) return;
+    histVeil.classList.add("open"); histList.innerHTML = "";
+    bkTx("hist", "readonly", st => st.get(editingId)).then(rec => {
+      const l = (rec && rec.list) || [];
+      histList.innerHTML = l.length ? l.map((v, i) => `<div class="bk-row"><div class="bk-info"><b>${escapeHtml(fmtWhen(v.at))}</b><small>${escapeHtml((v.body || "").replace(/\[[^\]]*\]/g, "").split("\n").filter(x => x.trim() && !/^\s*\{/.test(x)).slice(0, 2).join(" · ").slice(0, 110))}</small></div><button class="glass-btn" data-h="${i}">Cargar</button></div>`).join("")
+        : '<p class="bk-empty">Aún no hay versiones anteriores. Se guardan cada vez que cambias y guardas esta canción.</p>';
+      histList._l = l;
+    });
+  });
+  document.getElementById("histClose").addEventListener("click", () => histVeil.classList.remove("open"));
+  histVeil.addEventListener("click", e => { if(e.target === histVeil) histVeil.classList.remove("open"); });
+  histList.addEventListener("click", e => {
+    const b = e.target.closest("button[data-h]"); if(!b) return;
+    const v = (histList._l || [])[+b.dataset.h]; if(!v) return;
+    el.fieldTitle.value = v.title; el.fieldArtist.value = v.artist; el.fieldKey.value = v.key; el.fieldBody.value = v.body;
+    histVeil.classList.remove("open");
+    toast("Versión cargada en el editor. Pulsa Guardar para quedarte con ella.");
+  });
+
+  /* ---------------- biblioteca compartida (pública, sin cuenta) ---------------- */
+  const LIB = { items:[], last:null, more:false, loading:false, q:"", tab:"ex", timer:0, seq:0 };
+  const libVeil = document.getElementById("libVeil"), libRes = document.getElementById("libRes"), libMsg = document.getElementById("libMsg");
+  const libReported = () => { try{ return new Set(JSON.parse(localStorage.getItem("sonarium.reportadas") || "[]")); }catch(e){ return new Set(); } };
+  async function libHash(title, artist){
+    const d = await crypto.subtle.digest("SHA-256", te.encode(nrm(title.trim()) + "|" + nrm((artist || "").trim())));
+    return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 20);
+  }
+  const libTokens = (t, a) => [...new Set(nrm(t + " " + (a || "")).split(/[^a-z0-9]+/).filter(w => w.length >= 2))].slice(0, 16);
+  function libError(e){
+    const c = String((e && e.code) || ""), m = String((e && e.message) || e);
+    if(!navigator.onLine) return "Sin conexión. La biblioteca necesita internet.";
+    if(/permission|denied/i.test(c + m)) return "La biblioteca todavía no está activada (faltan publicar las reglas en Firebase).";
+    if(/index/i.test(m)) return "Firebase pide crear un índice para esta búsqueda.";
+    return "No pude conectar con la biblioteca. Intenta de nuevo en un momento.";
+  }
+  function libSetTab(t){
+    LIB.tab = t;
+    libVeil.querySelectorAll(".lt").forEach(b => b.classList.toggle("on", b.dataset.lt === t));
+    document.getElementById("libEx").hidden = t !== "ex"; document.getElementById("libSh").hidden = t !== "sh";
+    if(t === "ex" && !LIB.items.length) libLoad(true); else if(t === "sh") libFillMine();
+  }
+  async function libLoad(reset){
+    if(LIB.loading && !reset) return;
+    const my = ++LIB.seq; LIB.loading = true;
+    if(reset){ LIB.items = []; LIB.last = null; libRes.innerHTML = ""; }
+    libMsg.textContent = "Cargando…";
+    try{
+      await fbLoad();
+      const { collection, query, orderBy, limit, startAfter, where, getDocs } = cloud.fs;
+      const col = collection(cloud.db, "biblioteca"), words = searchWords(LIB.q);
+      let q;
+      if(words.length) q = query(col, where("tokens", "array-contains", words.slice().sort((a, b) => b.length - a.length)[0]), limit(50));
+      else q = query(col, orderBy("creado", "desc"), ...(LIB.last ? [startAfter(LIB.last)] : []), limit(30));
+      const snap = await getDocs(q);
+      if(my !== LIB.seq) return;
+      const rep = libReported(), got = [];
+      snap.forEach(d => { const v = d.data(); if(!rep.has(d.id)) got.push(Object.assign({ id:d.id }, v)); });
+      if(words.length) LIB.items = got.filter(x => { const h = nrm(x.titulo + " " + (x.artista || "") + " " + (x.etiquetas || []).join(" ")); return words.every(w => h.includes(w)); });
+      else { LIB.items = LIB.items.concat(got); LIB.last = snap.docs.length ? snap.docs[snap.docs.length - 1] : LIB.last; LIB.more = snap.docs.length >= 30; }
+      if(words.length) LIB.more = false;
+      libMsg.textContent = LIB.items.length ? "" : (words.length ? "No encontré nada con «" + LIB.q.trim() + "». Prueba con una palabra completa del título o del artista." : "Todavía no hay canciones compartidas. ¡Sé la primera persona en compartir una!");
+      libPaint();
+    }catch(e){ console.warn(e); libMsg.textContent = libError(e); }
+    finally{ if(my === LIB.seq) LIB.loading = false; }
+  }
+  function libPaint(){
+    libRes.innerHTML = LIB.items.map(x => {
+      const lines = String(x.cuerpo || "").split("\n").filter(l => !/^\s*\{/.test(l)).slice(0, 12).join("\n");
+      return `<div class="lib-row" data-id="${attr(x.id)}"><div class="lib-top"><div class="lib-main"><b>${escapeHtml(x.titulo)}</b><small>${escapeHtml([x.artista, x.tono ? "Tono " + x.tono : "", x.autor && x.autor !== "anónimo" ? "por " + x.autor : ""].filter(Boolean).join(" · "))}</small></div><button class="glass-btn" data-lib="prev">Ver</button><button class="glass-btn primary" data-lib="add">Añadir</button></div><div class="lib-prev" hidden><pre>${escapeHtml(lines)}</pre><button class="lib-rep" data-lib="rep" type="button">⚑ Reportar esta canción</button></div></div>`;
+    }).join("") + (LIB.more ? '<button class="glass-btn lib-more" data-lib="more" type="button">Cargar más</button>' : "");
+  }
+  function libFillMine(){
+    const sel = document.getElementById("libPick");
+    const mine = songs.filter(s => !s.trashedAt).sort((a, b) => a.title.localeCompare(b.title, "es"));
+    sel.innerHTML = mine.map(s => `<option value="${attr(s.id)}">${escapeHtml(s.title)}${s.artist ? " — " + escapeHtml(artistLabel(s.artist)) : ""}</option>`).join("");
+    if(activeId && mine.some(s => s.id === activeId)) sel.value = activeId;
+    try{ document.getElementById("libName").value = localStorage.getItem("sonarium.nombreBib") || ""; }catch(e){}
+    document.getElementById("libOk").checked = false; document.getElementById("libShMsg").textContent = "";
+  }
+  async function libPublish(){
+    const msg = document.getElementById("libShMsg"), s = songs.find(x => x.id === document.getElementById("libPick").value);
+    if(!s){ msg.textContent = "Elige una canción."; return; }
+    if(!document.getElementById("libOk").checked){ msg.textContent = "Marca la casilla para confirmar que puedes compartir esta letra."; return; }
+    if((s.body || "").length > 20000){ msg.textContent = "Esta canción es demasiado larga para la biblioteca."; return; }
+    const name = document.getElementById("libName").value.trim().slice(0, 30);
+    try{ localStorage.setItem("sonarium.nombreBib", name); }catch(e){}
+    const btn = document.getElementById("libPublish"); btn.disabled = true; msg.textContent = "Publicando…";
+    try{
+      await fbLoad();
+      const { doc, getDoc, setDoc, serverTimestamp } = cloud.fs;
+      const id = await libHash(s.title, s.artist), ref = doc(cloud.db, "biblioteca", id);
+      if((await getDoc(ref)).exists()){ msg.textContent = "Esa canción ya está en la biblioteca. ¡Gracias de todos modos!"; return; }
+      await setDoc(ref, { titulo: s.title.slice(0, 120), artista: (s.artist || "").slice(0, 160), tono: (s.key || "").slice(0, 12), cuerpo: s.body, etiquetas: (s.tags || []).slice(0, 8).map(t => String(t).slice(0, 24)), tokens: libTokens(s.title, s.artist), autor: name || "anónimo", creado: serverTimestamp(), derechos: true });
+      msg.textContent = "¡Compartida! Ya la puede encontrar cualquier persona."; LIB.items = []; LIB.last = null;
+    }catch(e){ console.warn(e); msg.textContent = libError(e); }
+    finally{ btn.disabled = false; }
+  }
+  function openLibrary(tab){ libVeil.classList.add("open"); libSetTab(tab || "ex"); }
+  document.getElementById("libClose").addEventListener("click", () => libVeil.classList.remove("open"));
+  libVeil.addEventListener("click", e => { if(e.target === libVeil) libVeil.classList.remove("open"); });
+  libVeil.querySelectorAll(".lt").forEach(b => b.addEventListener("click", () => libSetTab(b.dataset.lt)));
+  document.getElementById("libSearch").addEventListener("input", e => { LIB.q = e.target.value; clearTimeout(LIB.timer); LIB.timer = setTimeout(() => libLoad(true), 450); });
+  document.getElementById("libPublish").addEventListener("click", libPublish);
+  libRes.addEventListener("click", async e => {
+    const b = e.target.closest("[data-lib]"); if(!b) return;
+    const row = b.closest(".lib-row"), a = b.dataset.lib;
+    if(a === "more") return libLoad(false);
+    const it = row && LIB.items.find(x => x.id === row.dataset.id);
+    if(a === "prev"){ const p = row.querySelector(".lib-prev"); p.hidden = !p.hidden; b.textContent = p.hidden ? "Ver" : "Ocultar"; return; }
+    if(!it) return;
+    if(a === "add"){
+      if(titleExists(it.titulo)){ const ok = await askDialog({ title:"Ya tienes una canción con ese título", text:"¿La añado de todos modos?", ok:"Añadir" }); if(!ok) return; }
+      const song = { id: uid("s-"), folderId: null, title: it.titulo, artist: it.artista || "", key: it.tono || "", body: it.cuerpo, color: PALETTE[Math.floor(Math.random() * PALETTE.length)].hex };
+      if((it.etiquetas || []).length) song.tags = it.etiquetas.slice(0, 8);
+      songs.unshift(song); persist(); if(activeId === null) renderHome(false);
+      b.textContent = "Añadida ✓"; b.disabled = true; toast("Añadida a tu cancionero");
+    } else if(a === "rep"){
+      const r = await askDialog({ title:"Reportar esta canción", text:"Cuéntame brevemente qué pasa (letra con derechos de autor, contenido ofensivo, spam…). Lo reviso y la retiro si corresponde.", input:{ placeholder:"Motivo" }, ok:"Enviar reporte" });
+      if(r === false || r === null || r === undefined) return;
+      try{
+        await fbLoad(); const { collection, addDoc, serverTimestamp } = cloud.fs;
+        await addDoc(collection(cloud.db, "reportes"), { cancion: it.id, motivo: String(r === true ? "" : r).slice(0, 300), creado: serverTimestamp() });
+        const set = libReported(); set.add(it.id); try{ localStorage.setItem("sonarium.reportadas", JSON.stringify([...set])); }catch(_){}
+        LIB.items = LIB.items.filter(x => x.id !== it.id); libPaint(); toast("Gracias, la revisaré");
+      }catch(err){ toast(libError(err)); }
+    }
+  });
+  document.getElementById("libBtn").addEventListener("click", () => openLibrary("ex"));
+  document.getElementById("mobileLib").addEventListener("click", () => openLibrary("ex"));
+
   /* ---------------- importar desde PDF (se procesa en el navegador) ---------------- */
   const PDFJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
   const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -4121,8 +4930,8 @@ service cloud.firestore {
     return m ? m[1] : "";
   }
   function titleExists(t){
-    const q = t.trim().toLowerCase();
-    return q && songs.some(s => !s.trashedAt && s.title.trim().toLowerCase() === q);
+    const q = nrm(t.trim());
+    return q && songs.some(s => !s.trashedAt && nrm(s.title.trim()) === q);
   }
 
   async function readPdfRange(){
