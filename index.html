@@ -1735,6 +1735,31 @@
   .bk-info small{ font-size:11.5px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .bk-row .glass-btn{ padding:7px 11px; font-size:12px; }
 
+  /* ---------- encabezado compacto en el celular ---------- */
+  @media (max-width:640px){
+    .home-header{ padding:10px 16px 0; gap:0; }
+    .greet-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:nowrap; width:100%; }
+    .home-header .greet{ width:100%; }
+    .home-header .greet h1{ font-size:20px; line-height:1.2; margin:0; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .glass-btn.acct{ margin-left:0; flex:0 0 auto; padding:4px; min-width:0; }
+    .glass-btn.acct.on .al{ display:none; }
+    .glass-btn.acct:not(.on){ padding:6px 12px; }
+    .home-header .greet .home-sub{ margin-top:4px; font-size:11.5px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; white-space:nowrap; gap:6px; }
+    .home-header .greet .home-sub::-webkit-scrollbar{ display:none; }
+    .home-header .greet .home-sub > *{ flex:0 0 auto; padding:3px 10px !important; font-size:11.5px !important; }
+    .home-toolbar{ display:grid !important; grid-template-columns:minmax(0,1fr) auto auto; gap:8px; padding:8px 16px 2px; align-items:center; }
+    .home-toolbar #searchInput{ grid-column:1 / -1; height:42px; font-size:14px; }
+    .home-toolbar .sort-sel{ height:38px; min-width:0; width:100%; }
+    .home-toolbar #newFolderBtn, .home-toolbar #newSpaceBtn{ width:42px; height:38px; padding:0; justify-content:center; }
+    .home-toolbar #newFolderBtn .lb, .home-toolbar #newSpaceBtn .lb{ display:none; }
+    .crumbs{ padding:4px 16px 0; min-height:0; }
+    .crumbs:has(.crumb.current:only-child){ display:none; }
+    .filter-row{ padding:6px 16px 0 !important; }
+    .fchip{ padding:5px 12px; font-size:12.5px; }
+    .song-grid{ padding-top:8px; }
+    #homeScreen .card.add-card{ display:none; }
+  }
+
   /* ---------- diagramas de acordes ---------- */
   .song-render .chord-tag{ cursor:pointer; }
   .song-render .chord-tag::before{ content:""; position:absolute; inset:-3px -4px; }
@@ -2679,6 +2704,16 @@ service cloud.firestore {
         && request.resource.data.tokens is list && request.resource.data.tokens.size() <= 16
         && request.resource.data.autor is string && request.resource.data.autor.size() <= 30
         && request.resource.data.derechos == true
+        && request.resource.data.creado == request.time;
+    }
+
+    // Enlaces cortos para compartir un Espacio: un código al azar apunta al contenido.
+    match /compartidos/{code} {
+      allow get: if true;
+      allow list, update, delete: if false;
+      allow create: if code.matches('^[a-z0-9]{8}$')
+        && request.resource.data.keys().hasOnly(['datos','creado'])
+        && request.resource.data.datos is string && request.resource.data.datos.size() < 200000
         && request.resource.data.creado == request.time;
     }
 
@@ -5646,7 +5681,18 @@ service cloud.firestore {
     $t("shareVeil").classList.add("open");
     $t("shareLinkWarn").hidden = true;
     try{
-      share.link = baseUrl() + "#e=" + await packShare(sp);
+      const packed = await packShare(sp);
+      share.link = baseUrl() + "#e=" + packed;
+      // intento de enlace corto: se guarda el espacio en la nube y el enlace lleva solo un código
+      try{
+        if(navigator.onLine && packed.length < 190000){
+          const code = Array.from(crypto.getRandomValues(new Uint8Array(8)), b => "abcdefghijkmnpqrstuvwxyz23456789"[b % 32]).join("");
+          await fbLoad();
+          const { doc, setDoc, serverTimestamp } = cloud.fs;
+          await setDoc(doc(cloud.db, "compartidos", code), { datos: packed, creado: serverTimestamp() });
+          if(share.id === id) share.link = baseUrl() + "#c=" + code;
+        }
+      }catch(e){ console.warn("enlace corto no disponible", e); }
       if(share.link.length > 7500){ const w = $t("shareLinkWarn"); w.hidden = false; w.textContent = "El enlace es largo (" + Math.round(share.link.length / 1000) + " mil caracteres). Algunas apps lo cortan: si pasa, mejor usa el PDF o la lista."; }
     }catch(e){ $t("shareLinkWarn").hidden = false; $t("shareLinkWarn").textContent = "No se pudo crear el enlace en este navegador."; }
   }
@@ -5686,11 +5732,19 @@ service cloud.firestore {
   const validColor = c => /^#[0-9a-f]{6}$/i.test(c || "") ? c : PALETTE[Math.floor(Math.random() * PALETTE.length)].hex;
   const clampInt = (v, a, b) => { v = parseInt(v, 10); return isFinite(v) ? Math.max(a, Math.min(b, v)) : 0; };
   async function receiveShared(){
-    const m = /^#e=([zp][A-Za-z0-9_-]+)$/.exec(location.hash || "");
+    const m = /^#([ec])=([A-Za-z0-9_-]+)$/.exec(location.hash || "");
     if(!m) return;
     history.replaceState(null, "", baseUrl());
-    let data;
-    try{ data = await unpackShare(m[1]); }catch(e){ toast("El enlace no es válido o está incompleto"); return; }
+    let data, packed = m[2];
+    if(m[1] === "c"){
+      try{
+        await fbLoad();
+        const { doc, getDoc } = cloud.fs, snap = await getDoc(doc(cloud.db, "compartidos", m[2]));
+        if(!snap.exists()){ toast("Ese enlace ya no existe o está mal escrito"); return; }
+        packed = snap.data().datos;
+      }catch(e){ toast(navigator.onLine ? "No pude abrir el enlace" : "Necesitas internet para abrir este enlace"); return; }
+    }
+    try{ data = await unpackShare(packed); }catch(e){ toast("El enlace no es válido o está incompleto"); return; }
     if(!data || data.v !== 1 || !Array.isArray(data.s) || !data.s.length){ toast("El enlace no trae canciones"); return; }
     const list = data.s.slice(0, 60).map(o => ({
       title: clean(o.t, 200).trim() || "Sin título", artist: clean(o.a, 200), key: clean(o.k, 10), body: clean(o.b, 40000), color: validColor(o.c),
@@ -5714,7 +5768,7 @@ service cloud.firestore {
     openSpace(sp.id);
     toast("Espacio «" + name + "» agregado · dura 2 días (puedes editarlo)");
   }
-  window.addEventListener("hashchange", () => { if(/^#e=/.test(location.hash)) receiveShared(); });
+  window.addEventListener("hashchange", () => { if(/^#[ec]=/.test(location.hash)) receiveShared(); });
 
   /* ---------------- herramientas: metrónomo, afinador y tonos de referencia ---------------- */
   const tools = { ac:null };
