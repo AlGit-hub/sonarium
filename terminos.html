@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c1024">
+<meta name="description" content="Cómo funciona Sonarium: qué datos guarda, qué es público y cómo reportar o retirar una canción.">
+<title>Términos y privacidad · Sonarium</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0c1024; --bg2:#151233; --ink:#eef0fb; --dim:#a7acc9; --accent:#2fd8c4; --card:rgba(255,255,255,.06); --line:rgba(255,255,255,.14); }
+  @media (prefers-color-scheme: light){ :root{ --bg:#eef1fa; --bg2:#e2e7f6; --ink:#12162f; --dim:#4a5078; --accent:#0a8f80; --card:rgba(255,255,255,.75); --line:rgba(20,26,70,.16); } }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:'Manrope',system-ui,sans-serif; color:var(--ink); background:radial-gradient(ellipse at 50% 0%, var(--bg2), var(--bg) 70%) fixed; line-height:1.65; font-size:16px; }
+  main{ max-width:720px; margin:0 auto; padding:28px 20px 72px; }
+  a{ color:var(--accent); }
+  .back{ display:inline-block; margin-bottom:18px; font-weight:600; text-decoration:none; }
+  h1{ font-family:'Fraunces',serif; font-size:clamp(28px,6vw,40px); line-height:1.15; margin:0 0 6px; }
+  .upd{ color:var(--dim); font-size:14px; margin:0 0 26px; }
+  section{ background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px 20px; margin:14px 0; }
+  h2{ font-size:18px; margin:0 0 6px; }
+  p{ margin:6px 0; } ul{ margin:6px 0; padding-left:20px; } li{ margin:4px 0; }
+  :focus-visible{ outline:3px solid var(--accent); outline-offset:2px; border-radius:6px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">← Volver a Sonarium</a>
+  <h1>Términos y privacidad</h1>
+  <p class="upd">Última actualización: 21 de noviembre de 2026. Escrito en palabras sencillas; es una guía de uso, no un contrato legal.</p>
+
+  <section>
+    <h2>Qué es Sonarium</h2>
+    <p>Un cancionero gratuito con acordes, para cualquier persona y cualquier tipo de música. Puedes usarlo sin crear cuenta.</p>
+  </section>
+
+  <section>
+    <h2>Tus canciones son tuyas</h2>
+    <ul>
+      <li>Lo que escribes o importas se guarda <b>en tu propio dispositivo</b>, en tu navegador. Si borras los datos del navegador, se borran. Por eso Sonarium hace copias de seguridad automáticas, también en tu dispositivo.</li>
+      <li>Si activas la <b>copia en la nube</b> (con usuario y contraseña), tu cuaderno se cifra en tu navegador antes de subirse, para que quien administra Sonarium no pueda leer tus canciones.</li>
+      <li>Sonarium no muestra anuncios ni vende información. Para funcionar usa servicios de Google: Firebase (nube, enlaces y biblioteca) y Google Fonts (tipografías), por lo que Google puede ver datos técnicos básicos de la conexión, como la dirección IP.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Enlaces para compartir un Espacio</h2>
+    <p>Cuando compartes un Espacio, su contenido se guarda en un servidor y el enlace lleva un código. <b>Cualquier persona que tenga el enlace puede verlo.</b> Compártelo solo con quien quieras.</p>
+  </section>
+
+  <section>
+    <h2>Biblioteca compartida (pública)</h2>
+    <ul>
+      <li>Todo lo que publicas en la biblioteca lo puede <b>ver, buscar y copiar cualquier persona</b>.</li>
+      <li>Desde la app no se puede editar ni borrar una canción ya publicada. Si necesitas que se retire, repórtala desde la biblioteca explicando el motivo.</li>
+      <li>El nombre que escribes al compartir se muestra públicamente. Si lo dejas vacío, aparece como «anónimo».</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Derechos de autor</h2>
+    <ul>
+      <li>Comparte solo letras y acordes que sean <b>tuyos, de dominio público o que tengas permiso de compartir</b>. Al publicar confirmas que puedes hacerlo.</li>
+      <li>Si eres autor o representas a quien tiene los derechos de una canción y quieres que se retire, usa el botón «Reportar» de la biblioteca indicando el título y que eres titular, o escribe a <a class="mail" href="#">el correo de contacto</a>. Se revisa y se retira lo que corresponda.</li>
+      <li>Se podrán retirar canciones reportadas, repetidas, ofensivas o que parezcan spam, sin previo aviso.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Buen uso</h2>
+    <p>No publiques contenido ofensivo, engañoso ni que dañe a otras personas. Sonarium se ofrece tal como es, sin garantías: haz tus copias importantes (el botón de exportar sirve para eso).</p>
+  </section>
+
+  <section>
+    <h2>Contacto</h2>
+    <p>Para reportes, retiros de canciones o dudas: <a class="mail" href="#">escríbeme por correo</a> (usa «Reportar» en la biblioteca si es sobre una canción concreta, así llega con los datos).</p>
+  </section>
+
+  <section>
+    <h2>Cambios</h2>
+    <p>Si esto cambia, se actualizará esta página y la fecha de arriba.</p>
+  </section>
+</main>
+<script>
+  // el correo se arma aquí para que no lo recojan los robots de spam
+  (function(){ var m = ["alvaroguzman9608", "gmail.com"].join("@"); document.querySelectorAll("a.mail").forEach(function(a){ a.href = "mailto:" + m + "?subject=" + encodeURIComponent("Sonarium: reporte"); a.textContent = m; }); })();
+</script>
+</body>
+</html>
