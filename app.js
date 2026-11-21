@@ -385,7 +385,7 @@ y agrega las [G]tuyas [Am]aquí.`
     measurementId: "G-JTDSL6N8JP"
   };
   const FB_COLLECTION = "cuadernos";
-  // App Check (reCAPTCHA v3): pega aquí la «clave del sitio» (pública) cuando la tengas. Vacía = desactivado.
+  // App Check (reCAPTCHA Enterprise / Fraud Defense): la «clave del sitio» (pública). Vacía = desactivado.
   const APPCHECK_SITE_KEY = "6LcfsCsuAAAAAOK3PWIpAKEaUnSEft1GZJ381bbi";
   const FB_VERSION = "10.12.2";
   const RULES_TEXT =
@@ -474,7 +474,7 @@ service cloud.firestore {
       try{
         if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
         const ac = await import(base + "firebase-app-check.js");
-        ac.initializeAppCheck(app, { provider: new ac.ReCaptchaV3Provider(APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
+        ac.initializeAppCheck(app, { provider: new ac.ReCaptchaEnterpriseProvider(APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
       }catch(e){ console.warn("App Check no se pudo iniciar", e); }
     }
     cloud.db = fs.getFirestore(app);
