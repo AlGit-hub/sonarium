@@ -26,6 +26,7 @@ html:root{
   --lg-rim-c: rgba(255,255,255,.26);
   --lg-inner: inset 0 1px 0 rgba(255,255,255,.38), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 22px rgba(255,255,255,.04);
   --lg-drop: 0 18px 44px -18px rgba(0,0,0,.65), 0 2px 8px rgba(0,0,0,.25);
+  --lg-hair: inset 0 0 0 1px rgba(255,255,255,.16);
   --lg-press: rgba(255,255,255,.14);
   --lg-scrim: rgba(5,6,18,.52);
   --lg-ink: #f2f4ff;
@@ -41,6 +42,7 @@ html:root[data-theme="light"]{
   --lg-rim-c: rgba(255,255,255,.75);
   --lg-inner: inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(36,42,96,.07), inset 0 0 22px rgba(255,255,255,.35);
   --lg-drop: 0 16px 38px -18px rgba(40,50,120,.34), 0 2px 8px rgba(40,50,120,.10);
+  --lg-hair: inset 0 0 0 1px rgba(36,42,96,.16);
   --lg-press: rgba(36,42,96,.10);
   --lg-scrim: rgba(40,48,100,.28);
   --lg-ink: #171b38;
@@ -66,7 +68,7 @@ html:root .tour-card{
   isolation:isolate;
 }
 /* posición: se conserva la original; solo se garantiza ancla para el borde especular */
-html:root .modal, html:root .glass:not(.panel){ position:relative; }
+:where(.glass, .modal){ position:relative; } /* especificidad 0: cualquier position propio (absolute/fixed) gana */
 
 /* Borde especular: degradado que brilla arriba-izquierda y abajo-derecha */
 html:root .glass::before,
@@ -106,7 +108,7 @@ html:root .a-chip{
   background:var(--lg-surface);
   border:0;
   color:var(--lg-ink);
-  box-shadow:var(--lg-inner), 0 6px 16px -10px rgba(0,0,0,.45);
+  box-shadow:var(--lg-hair), var(--lg-inner), 0 6px 16px -10px rgba(0,0,0,.45);
   transition:transform .55s var(--spring), background .25s ease, box-shadow .3s ease, opacity .2s ease;
   transform:translateZ(0);
   -webkit-tap-highlight-color:transparent;
@@ -228,8 +230,7 @@ html:root #toast.show{ transform:translate(-50%, 0) scale(1); opacity:1; }
 
 /* ---------- Barra lateral expandible (escritorio) ---------- */
 html:root .side-inner{ border-radius:26px; transition:width .6s var(--spring), box-shadow .3s ease; }
-html:root .side-inner .glass-btn{ background:transparent; box-shadow:none; }
-html:root .side-inner .glass-btn:hover{ background:var(--lg-press); transform:none; }
+html:root .side-inner .glass-btn:hover{ transform:translateX(2px) scale(1.03); }
 
 /* ---------- Campos y deslizadores ---------- */
 html:root input[type=text], html:root input[type=search], html:root input[type=email],
@@ -246,16 +247,17 @@ html:root[data-theme="light"] select{ background:rgba(255,255,255,.72); box-shad
 html:root input:focus, html:root textarea:focus, html:root select:focus{
   outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft);
 }
-html:root input[type=range]{ -webkit-appearance:none; appearance:none; height:28px; background:transparent; accent-color:var(--accent); }
-html:root input[type=range]::-webkit-slider-runnable-track{ height:6px; border-radius:99px; background:rgba(127,130,170,.35); }
+html:root input[type=range]{ -webkit-appearance:none; appearance:none; height:20px; background:transparent; accent-color:var(--accent); }
+html:root input[type=range]::-webkit-slider-runnable-track{ height:4px; border-radius:99px; background:rgba(127,130,170,.35); }
 html:root input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none; width:24px; height:24px; margin-top:-9px; border-radius:50%;
+  -webkit-appearance:none; width:16px; height:16px; margin-top:-6px; border-radius:50%;
   background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.35), inset 0 -2px 4px rgba(0,0,0,.08);
   transition:transform .4s var(--spring);
 }
-html:root input[type=range]:active::-webkit-slider-thumb{ transform:scale(1.2); }
-html:root input[type=range]::-moz-range-track{ height:6px; border-radius:99px; background:rgba(127,130,170,.35); }
-html:root input[type=range]::-moz-range-thumb{ width:24px; height:24px; border:0; border-radius:50%; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.35); }
+html:root input[type=range]:active::-webkit-slider-thumb{ transform:scale(1.25); }
+html:root .scrollbar-dock input[type=range]{ width:96px; }
+html:root input[type=range]::-moz-range-track{ height:4px; border-radius:99px; background:rgba(127,130,170,.35); }
+html:root input[type=range]::-moz-range-thumb{ width:16px; height:16px; border:0; border-radius:50%; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.35); }
 
 /* ---------- Letra: legibilidad ante todo ---------- */
 html:root .lyrics-area{ color:var(--lg-ink); }
@@ -319,3 +321,15 @@ html:root[data-motion="reduced"] *::after{
     --spring-soft: linear(0, 0.0844, 0.2633, 0.4609, 0.638, 0.7783, 0.8797, 0.947, 0.9876, 1.0091, 1.0182, 1.0199, 1.0177, 1.0139, 1.01, 1.0066, 1.004, 1.0021, 1.0009, 1.0001, 0.9998, 0.9996, 0.9996, 0.9997, 0.9997, 0.9998, 0.9999, 0.9999, 1);
   }
 }
+
+/* Buscador: si el texto no cabe, termina en «…» */
+html:root .home-toolbar input#searchInput{ text-overflow:ellipsis; }
+html:root .home-toolbar input#searchInput::placeholder{ text-overflow:ellipsis; }
+
+/* Icono del saludo (reemplaza al emoji) */
+.lg-gi{ display:inline-flex; width:.82em; height:.82em; margin-left:.32em; vertical-align:-.06em; }
+.lg-gi svg{ width:100%; height:100%; display:block; overflow:visible; filter:drop-shadow(0 2px 6px var(--accent-soft)); }
+
+/* Barra del modo proyección: nunca se sale de la pantalla en móviles */
+#projVeil .pj-ctl{ max-width:calc(100vw - 16px); flex-wrap:wrap; justify-content:center; border-radius:28px; }
+@media (max-width:520px){ #projVeil .pj-ctl button{ min-width:38px; height:38px; } }
