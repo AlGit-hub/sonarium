@@ -477,7 +477,9 @@ service cloud.firestore {
         ac.initializeAppCheck(app, { provider: new ac.ReCaptchaEnterpriseProvider(APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
       }catch(e){ console.warn("App Check no se pudo iniciar", e); }
     }
-    cloud.db = fs.getFirestore(app);
+    // si la conexión continua está bloqueada (extensiones, antivirus, algunas redes), Firestore cambia solo a un método más compatible
+    try{ cloud.db = fs.initializeFirestore(app, { experimentalAutoDetectLongPolling: true }); }
+    catch(e){ cloud.db = fs.getFirestore(app); }
   }
   function b64e(u8){
     let s = ""; const CH = 0x8000;
