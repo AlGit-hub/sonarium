@@ -29,7 +29,9 @@ html:root{
   --lg-hair: inset 0 0 0 1px rgba(255,255,255,.16);
   --lg-press: rgba(255,255,255,.14);
   --lg-scrim: rgba(5,6,18,.52);
-  --lg-modal-bg: linear-gradient(160deg, rgba(56,62,110,.95), rgba(24,28,64,.97));
+  --lg-solid: rgba(27,31,72,.97);
+  --lg-modal-bg: linear-gradient(160deg, rgba(56,62,110,.985), rgba(24,28,64,.99));
+  --lg-modal-solid: linear-gradient(160deg, #383e6e, #181c40);
   --lg-field: rgba(8,10,30,.62);
   --lg-ink: #f2f4ff;
   --lg-ink-dim: #b4b9d8;
@@ -47,7 +49,9 @@ html:root[data-theme="light"]{
   --lg-hair: inset 0 0 0 1px rgba(36,42,96,.16);
   --lg-press: rgba(36,42,96,.10);
   --lg-scrim: rgba(40,48,100,.28);
-  --lg-modal-bg: linear-gradient(160deg, rgba(255,255,255,.98), rgba(244,246,255,.96));
+  --lg-solid: rgba(248,249,255,.98);
+  --lg-modal-bg: linear-gradient(160deg, rgba(255,255,255,.99), rgba(244,246,255,.99));
+  --lg-modal-solid: linear-gradient(160deg, #ffffff, #f4f6ff);
   --lg-field: #ffffff;
   --lg-ink: #171b38;
   --lg-ink-dim: #454c72;
@@ -304,6 +308,11 @@ body.lite .glass, body.lite .modal, body.lite .mobile-dock, body.lite .scrollbar
 body.lite .space-nav, body.lite .side-inner, body.lite #toast, body.lite .chord-pop, body.lite .tour-card{
   background:var(--lg-surface-strong) !important; box-shadow:var(--lg-inner) !important;
 }
+body.lite .modal, body.lite .mobile-dock, body.lite .scrollbar-dock, body.lite .space-nav,
+body.lite #toast, body.lite .chord-pop, body.lite .tour-card, body.lite .side-inner{
+  background:var(--lg-solid) !important;
+}
+body.lite .modal, html:root[data-contrast="alto"] .modal{ background:var(--lg-modal-solid) !important; }
 body.lite .song-grid .card{ animation:none; }
 
 /* Sin soporte de blur: fondo sólido legible */
@@ -320,7 +329,7 @@ html:root[data-contrast="alto"] .mobile-dock, html:root[data-contrast="alto"] .s
 html:root[data-contrast="alto"] .side-inner, html:root[data-contrast="alto"] #toast,
 html:root[data-contrast="alto"] .chord-pop, html:root[data-contrast="alto"] .space-nav{
   -webkit-backdrop-filter:none; backdrop-filter:none;
-  background:var(--lg-surface-strong);
+  background:var(--lg-solid);
   outline:2px solid var(--lg-ink); outline-offset:-2px;
 }
 

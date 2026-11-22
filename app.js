@@ -1590,9 +1590,10 @@ service cloud.firestore {
       '<button type="button" class="av-opt' + (a.id === sel ? " on" : "") + '" data-av="' + a.id + '" style="background:' + avGrad(a) + '" aria-label="Avatar ' + a.id + '">' + a.e + '</button>').join("") + '</div>';
   }
   /* ícono de la app (pantalla de inicio / app instalada): cuadrado completo con el avatar */
-  function avatarSquare(a, size){
+  function avatarSquare(a, size, round){
     const c = document.createElement("canvas"); c.width = c.height = size;
     const x = c.getContext("2d");
+    if(round){ x.beginPath(); x.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2); x.clip(); }   // ícono circular, sin esquinas
     const g = x.createLinearGradient(0, 0, size, size); g.addColorStop(0, a.a); g.addColorStop(1, a.b);
     x.fillStyle = g; x.fillRect(0, 0, size, size);
     x.font = Math.round(size * 0.5) + "px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
@@ -1618,6 +1619,7 @@ service cloud.firestore {
     }
     try{
       const i180 = avatarSquare(a, 180), i192 = avatarSquare(a, 192), i512 = avatarSquare(a, 512);
+      const r192 = avatarSquare(a, 192, true), r512 = avatarSquare(a, 512, true);   // circulares para "any"
       if(touch) touch.setAttribute("href", i180);
       else if(!dyn){ const l = document.createElement("link"); l.rel = "apple-touch-icon"; l.id = "dynApple"; l.href = i180; document.head.appendChild(l); }
       if(!man) return;
@@ -1631,7 +1633,7 @@ service cloud.firestore {
       const m = Object.assign({ name:"Sonarium", short_name:"Sonarium", display:"standalone", background_color:"#0c1024", theme_color:"#0c1024" }, base, {
         start_url: abs(base.start_url, here), scope: abs(base.scope, "./"), id: abs(base.id, base.start_url || here),
         icons: [
-          { src:i192, sizes:"192x192", type:"image/png", purpose:"any" }, { src:i512, sizes:"512x512", type:"image/png", purpose:"any" },
+          { src:r192, sizes:"192x192", type:"image/png", purpose:"any" }, { src:r512, sizes:"512x512", type:"image/png", purpose:"any" },
           { src:i192, sizes:"192x192", type:"image/png", purpose:"maskable" }, { src:i512, sizes:"512x512", type:"image/png", purpose:"maskable" }
         ]
       });
