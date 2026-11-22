@@ -165,7 +165,6 @@
     box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 8px 20px -12px rgba(0,0,0,0.6);
   }
   .glass-btn:hover{ background:rgba(255,255,255,0.16); transform:translateY(-1px); }
-  .glass-btn:active{ transform:translateY(0px) scale(0.98); }
   .glass-btn.icon-only{ padding:10px; aspect-ratio:1; justify-content:center; }
   .glass-btn.primary{
     background:linear-gradient(135deg, var(--accent-soft), rgba(167,139,250,0.35));
@@ -792,9 +791,6 @@
     animation-delay:calc(var(--i, 0) * 30ms);
   }
   .card:hover{ transform:translateY(-3px); }
-  .card:active{ transform:translateY(-1px) scale(.992); }
-  .modal-veil.open{ animation:veilIn .24s ease; }
-  @keyframes veilIn{ from{ opacity:0; } to{ opacity:1; } }
   .modal.open, .modal-veil.open .modal{ animation:modalIn .32s var(--ease-soft); }
   @keyframes modalIn{ from{ opacity:0; transform:translateY(10px) scale(.985); } to{ opacity:1; transform:none; } }
   .home-toolbar input{ transition:border-color .25s ease, box-shadow .25s ease, background-color .25s ease; }
@@ -981,7 +977,6 @@
     transform:translateY(-2px);
     box-shadow:var(--glass-edge), 0 16px 30px -14px rgba(0,0,0,.7), 0 0 26px -10px var(--accent-soft);
   }
-  .glass-btn:active, .space-chip:active, .mini:active{ transform:translateY(0) scale(.965); transition-duration:.12s; }
   .glass-btn.primary{
     background:linear-gradient(135deg, var(--accent-soft), rgba(167,139,250,.38) 60%, rgba(255,255,255,.1));
     box-shadow:var(--glass-edge), 0 12px 30px -12px var(--accent);
@@ -999,7 +994,6 @@
     transition:transform .14s ease-out, border-color .3s ease, box-shadow .4s ease, opacity .3s ease, background .3s ease;
     box-shadow:var(--glass-edge), 0 34px 54px -26px rgba(0,0,0,.8), 0 0 34px -14px var(--c, var(--accent));
   }
-  .card:active{ transform:perspective(900px) translateY(-1px) scale(.985); }
   .card.dragging{ opacity:.45; transform:scale(.97); }
   .folder-card.drop-ok{ transform:translateY(-3px) scale(1.02); }
 
@@ -1020,15 +1014,10 @@
   }
   .scrollbar-dock button{ transition:transform .4s var(--spring), background .3s ease, box-shadow .4s ease; }
   .scrollbar-dock button:hover{ transform:scale(1.08); }
-  .scrollbar-dock button:active{ transform:scale(.94); transition-duration:.1s; }
   .scrollbar-dock button.playing{ animation:glowPulse 2.6s ease-in-out infinite; }
   @keyframes glowPulse{ 0%,100%{ box-shadow:0 0 0 0 transparent; } 50%{ box-shadow:0 0 24px 3px var(--accent-soft); } }
 
   /* ventanas */
-  .modal-veil.open{ animation:veilIn2 .3s ease; }
-  @keyframes veilIn2{ from{ opacity:0; -webkit-backdrop-filter:blur(0); backdrop-filter:blur(0); } to{ opacity:1; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); } }
-  .modal-veil.open .modal{ animation:modalSpring .5s var(--spring); }
-  @keyframes modalSpring{ from{ opacity:0; transform:translateY(22px) scale(.95); } 60%{ opacity:1; } to{ opacity:1; transform:none; } }
   .modal{ -webkit-backdrop-filter:blur(30px) saturate(1.7); backdrop-filter:blur(30px) saturate(1.7); }
   #toast{ -webkit-backdrop-filter:blur(18px) saturate(1.7); backdrop-filter:blur(18px) saturate(1.7); box-shadow:var(--glass-edge), 0 16px 34px -14px rgba(0,0,0,.7); }
 
@@ -1282,6 +1271,7 @@
   /* recorrido guiado */
   #tour{ position:fixed; inset:0; z-index:90; display:none; }
   #tour.on{ display:block; animation:veilIn .3s ease; }
+  @keyframes veilIn{ from{ opacity:0; } to{ opacity:1; } }
   .tour-block{ position:fixed; inset:0; }
   .tour-spot{
     position:fixed; pointer-events:none;
@@ -1388,7 +1378,6 @@
     transition:--rx .22s ease-out, --ry .22s ease-out, --ty .5s var(--ease-expo), scale .3s var(--ease-expo),
                border-color .35s ease, box-shadow .5s ease, opacity .3s ease, background .35s ease;
   }
-  .card:active{ --ty:-1px; scale:.985; transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--ty)); }
   @media (hover:none), (pointer:coarse){ .card:hover{ --ty:0px; } }
   @media (prefers-reduced-motion: reduce){ .card:hover{ --ty:0px; } }
 
@@ -1398,8 +1387,6 @@
   .song-grid.enter .quote-card{ animation:itemIn3 .8s var(--ease-expo) backwards; animation-delay:.45s; }
   @keyframes screenIn3{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
   #homeScreen, #songScreen{ animation:screenIn3 .45s var(--ease-expo); }
-  @keyframes veilIn2{ from{ opacity:0; } to{ opacity:1; } }
-  .modal-veil.open .modal{ animation:modalSpring .55s var(--ease-expo); }
   .song-in .song-line{ animation-duration:.6s; animation-timing-function:var(--ease-expo); }
   .glass-btn, .space-chip, .mini{ transition-timing-function:var(--ease-expo); }
   .lyrics-area, .song-grid{ overscroll-behavior:contain; }
@@ -1810,12 +1797,6 @@
     -webkit-backdrop-filter:none; backdrop-filter:none;
   }
   .scrollbar-dock button{ -webkit-backdrop-filter:none; backdrop-filter:none; }
-  /* al tocar, el botón se hincha como una gota de cristal */
-  .mobile-dock .glass-btn:active, .scrollbar-dock button:active{
-    transform:scale(1.1); transition-duration:.18s;
-    background:linear-gradient(160deg, rgba(255,255,255,.4), rgba(255,255,255,.14));
-    box-shadow:inset 0 1.5px 1px rgba(255,255,255,.8), 0 10px 26px -8px rgba(0,0,0,.5);
-  }
   /* la barra de espacio y el aviso también */
   #toast{
     background:linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,.07));
@@ -1869,14 +1850,10 @@
     -webkit-backdrop-filter:blur(6px) saturate(2) brightness(1.06); backdrop-filter:blur(6px) saturate(2) brightness(1.06);
     box-shadow:var(--lg-rim), 0 10px 22px -14px rgba(0,0,0,.6);
   }
-  html[data-lens="1"] .glass-btn, html[data-lens="1"] .space-chip, html[data-lens="1"] .mini{
-    -webkit-backdrop-filter:url(#lgLensSm) blur(3px) saturate(2) brightness(1.06); backdrop-filter:url(#lgLensSm) blur(3px) saturate(2) brightness(1.06);
-  }
   .glass-btn.primary, .tt.on, .tab.on{
     background:linear-gradient(135deg, rgba(47,216,196,.55), rgba(167,139,250,.5) 65%, rgba(255,255,255,.14));
     border-color:rgba(255,255,255,.4);
   }
-  .glass-btn:active, .space-chip:active, .mini:active{ transform:scale(1.06); background:linear-gradient(160deg, rgba(255,255,255,.38), rgba(255,255,255,.12)); transition-duration:.16s; }
   /* buscador y campos: vidrio hundido */
   .home-toolbar input, .field input, .field textarea, .field select, .metro-row select{
     background:linear-gradient(180deg, rgba(0,0,0,.16), rgba(255,255,255,.07));
