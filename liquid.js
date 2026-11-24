@@ -171,10 +171,119 @@
     }).observe(document.body, { childList: true, characterData: true, subtree: true });
   }
 
+
+  /* ---- Ampliar como al abrir una app en iOS ----
+     La canción (o el contenido de la carpeta) crece desde la tarjeta que tocaste y, al volver, se encoge hacia ella.
+     Solo observa y anima: no cambia la lógica de app.js. Se omite con animaciones reducidas o modo ligero. */
+  function zoomNav() {
+    var home = document.getElementById("homeScreen"), song = document.getElementById("songScreen"), grid = document.getElementById("songGrid");
+    if (!home || !song || !grid || !song.animate) return;
+    var last = null, origin = null, songRect = null, wasOpen = false;
+
+    function motionOK() {
+      var m = document.documentElement.getAttribute("data-motion");
+      if (m === "reduced") return false;
+      if (m !== "full" && window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+      return !document.body.classList.contains("lite");
+    }
+    function ease() {
+      var v = getComputedStyle(document.documentElement).getPropertyValue("--spring-soft").trim();
+      try { if (v && CSS.supports("transition-timing-function", v)) return v; } catch (e) {}
+      return "cubic-bezier(.3,1.15,.5,1)";
+    }
+    function light() { return document.documentElement.getAttribute("data-theme") === "light"; }
+    function fresh() { return last && performance.now() - last.t < 700; }
+
+    // recordar la tarjeta tocada (antes de que app.js cambie de pantalla)
+    document.addEventListener("click", function (e) {
+      var c = e.target.closest && e.target.closest(".song-card, .folder-card");
+      if (!c || e.target.closest(".card-actions")) return;
+      last = {
+        rect: c.getBoundingClientRect(), t: performance.now(),
+        kind: c.classList.contains("folder-card") ? "folder" : "song",
+        radius: parseFloat(getComputedStyle(c).borderTopLeftRadius) || 24
+      };
+    }, true);
+
+    function fromTo(elm, rect, radius, finalRadius) {
+      var b = elm.getBoundingClientRect();
+      if (!b.width || !b.height) return null;
+      var s = Math.max(rect.width / b.width, 0.1);
+      var dx = rect.left + rect.width / 2 - (b.left + b.width / 2);
+      var dy = rect.top + rect.height / 2 - (b.top + b.height / 2);
+      return { s: s, dx: dx, dy: dy, r0: radius / s, rf: finalRadius, b: b };
+    }
+
+    // ---- abrir canción: crece desde su tarjeta ----
+    function openZoom() {
+      if (!motionOK() || !fresh() || last.kind !== "song") return;
+      var m = fromTo(song, last.rect, last.radius, 0);
+      if (!m) return;
+      origin = last.rect; last = null;
+      var bg0 = light() ? "rgba(250,251,255,.97)" : "rgba(26,30,66,.96)", bg1 = light() ? "rgba(250,251,255,0)" : "rgba(26,30,66,0)";
+      var prev = song.style.overflow; song.style.overflow = "hidden";
+      var a = song.animate([
+        { transform: "translate(" + m.dx + "px," + m.dy + "px) scale(" + m.s + ")", opacity: 0, borderRadius: m.r0 + "px", backgroundColor: bg0 },
+        { opacity: 1, offset: 0.2 },
+        { transform: "none", opacity: 1, borderRadius: "0px", backgroundColor: bg1 }
+      ], { duration: 640, easing: ease() });
+      a.onfinish = a.oncancel = function () { song.style.overflow = prev; };
+    }
+
+    // ---- abrir carpeta: su contenido crece desde la carpeta ----
+    function folderZoom() {
+      if (!motionOK() || !fresh() || last.kind !== "folder" || home.style.display === "none") return;
+      var m = fromTo(grid, last.rect, 0, 0);
+      if (!m) return;
+      last = null;
+      grid.classList.add("lg-zoom");
+      var a = grid.animate([
+        { transform: "translate(" + m.dx + "px," + m.dy + "px) scale(" + Math.max(m.s, 0.45) + ")", opacity: 0 },
+        { opacity: 1, offset: 0.25 },
+        { transform: "none", opacity: 1 }
+      ], { duration: 560, easing: ease() });
+      a.onfinish = a.oncancel = function () { grid.classList.remove("lg-zoom"); };
+    }
+
+    // ---- volver: lámina de cristal que se encoge hacia la tarjeta + inicio que se acomoda ----
+    function closeZoom() {
+      if (!motionOK() || !songRect) return;
+      var g = document.createElement("div");
+      g.className = "lg-ghost";
+      g.style.cssText = "left:" + songRect.left + "px;top:" + songRect.top + "px;width:" + songRect.width + "px;height:" + songRect.height + "px";
+      document.body.appendChild(g);
+      var tx, ty, s;
+      if (origin) {
+        s = Math.max(origin.width / songRect.width, 0.1);
+        tx = origin.left + origin.width / 2 - (songRect.left + songRect.width / 2);
+        ty = origin.top + origin.height / 2 - (songRect.top + songRect.height / 2);
+      } else { s = 0.3; tx = 0; ty = 0; }
+      var a = g.animate([
+        { transform: "none", opacity: 0.9, borderRadius: "0px" },
+        { opacity: 0.9, offset: 0.55 },
+        { transform: "translate(" + tx + "px," + ty + "px) scale(" + s + ")", opacity: 0, borderRadius: (24 / s) + "px" }
+      ], { duration: 460, easing: "cubic-bezier(.32,.72,0,1)" });
+      a.onfinish = a.oncancel = function () { g.remove(); };
+      home.animate([{ transform: "scale(1.045)", opacity: 0.55 }, { transform: "none", opacity: 1 }], { duration: 560, easing: ease() });
+      origin = null; songRect = null;
+    }
+
+    new MutationObserver(function () {
+      var open = song.style.display === "flex";
+      if (open && !wasOpen) { songRect = song.getBoundingClientRect(); openZoom(); }
+      else if (!open && wasOpen) closeZoom();
+      wasOpen = open;
+    }).observe(song, { attributes: true, attributeFilter: ["style"] });
+
+    new MutationObserver(function () { if (home.style.display !== "none") folderZoom(); })
+      .observe(grid, { childList: true });
+  }
+
   function init() {
     scan();
     fixGreeting();
     watchIcons();
+    zoomNav();
     var gEl = document.getElementById("greeting");
     if (gEl) new MutationObserver(fixGreeting).observe(gEl, { childList: true, characterData: true, subtree: true });
     // pestañas que se crean después (p. ej. el modal de cuenta vuelve a dibujar su HTML)
