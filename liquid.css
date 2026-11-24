@@ -5,7 +5,7 @@
    - Brillo especular en el borde (::before con máscara) + reflejo interior.
    - Física "spring" (resorte) con linear() y respaldo cubic-bezier.
    - Modo claro y oscuro con texto siempre legible.
-   - Respeta: body.lite, data-contrast="alto", data-motion="reduced", prefers-reduced-motion.
+   - Respeta: data-contrast="alto", data-motion="reduced", prefers-reduced-motion.
    ========================================================================== */
 
 html:root{
@@ -298,22 +298,6 @@ html[data-lens="1"]:root .modal.glass{
 /* ==========================================================================
    Modos especiales (se respetan siempre)
    ========================================================================== */
-/* Rendimiento bajo: sin blur ni sombras pesadas */
-body.lite .glass, body.lite .modal, body.lite .mobile-dock, body.lite .scrollbar-dock,
-body.lite .space-nav, body.lite .side-inner, body.lite #toast, body.lite .chord-pop, body.lite .tour-card,
-body.lite .modal-veil{
-  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
-}
-body.lite .glass, body.lite .modal, body.lite .mobile-dock, body.lite .scrollbar-dock,
-body.lite .space-nav, body.lite .side-inner, body.lite #toast, body.lite .chord-pop, body.lite .tour-card{
-  background:var(--lg-surface-strong) !important; box-shadow:var(--lg-inner) !important;
-}
-body.lite .modal, body.lite .mobile-dock, body.lite .scrollbar-dock, body.lite .space-nav,
-body.lite #toast, body.lite .chord-pop, body.lite .tour-card, body.lite .side-inner{
-  background:var(--lg-solid) !important;
-}
-body.lite .modal, html:root[data-contrast="alto"] .modal{ background:var(--lg-modal-solid) !important; }
-body.lite .song-grid .card{ animation:none; }
 
 /* Sin soporte de blur: fondo sólido legible */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
@@ -426,10 +410,6 @@ html:root #splash .sp-bar i{ border-radius:inherit; box-shadow:0 0 12px var(--ac
 /* salida: se desvanece con un resorte suave */
 html:root #splash{ transition:opacity .8s ease, transform .95s var(--spring-soft), filter .8s ease; }
 /* sin desenfoque: fondos sólidos legibles */
-body.lite #splash .sp-disc, body.lite #splash .splash-quote, body.lite #splash .hint{
-  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
-}
-body.lite #splash .splash-quote{ background:rgba(40,46,92,.7) !important; }
 
 /* ---------- Ampliar al abrir (estilo iOS) ---------- */
 .lg-ghost{
@@ -439,4 +419,48 @@ body.lite #splash .splash-quote{ background:rgba(40,46,92,.7) !important; }
 }
 /* mientras la carpeta se amplía, las tarjetas no hacen su entrada en cascada (sería doble animación) */
 html:root #songGrid.lg-zoom .card{ animation:none; }
-body.lite .lg-ghost{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+
+/* ==========================================================================
+   Fondo nuevo (estilo RoboKids): estático + iconos que flotan con transform
+   ========================================================================== */
+/* se retira el fondo anterior: manchas gigantes desenfocadas que cambiaban de forma */
+html:root .aurora, html:root .cursor-light, html:root .grain{ display:none !important; }
+
+.lg-bg{
+  position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+  background-image:
+    radial-gradient(circle at 12% 16%, color-mix(in srgb, var(--teal, #2fd8c4) 20%, transparent) 0, transparent 40%),
+    radial-gradient(circle at 90% 84%, color-mix(in srgb, var(--violet, #a78bfa) 22%, transparent) 0, transparent 42%),
+    radial-gradient(circle at 84% 14%, color-mix(in srgb, var(--rose, #fb7185) 10%, transparent) 0, transparent 30%),
+    radial-gradient(rgba(255,255,255,.11) 1.5px, transparent 1.9px);
+  background-size:auto, auto, auto, 30px 30px;
+}
+html:root[data-theme="light"] .lg-bg{
+  background-image:
+    radial-gradient(circle at 12% 16%, color-mix(in srgb, var(--teal, #2fd8c4) 24%, transparent) 0, transparent 40%),
+    radial-gradient(circle at 90% 84%, color-mix(in srgb, var(--violet, #a78bfa) 24%, transparent) 0, transparent 42%),
+    radial-gradient(circle at 84% 14%, color-mix(in srgb, var(--rose, #fb7185) 14%, transparent) 0, transparent 30%),
+    radial-gradient(rgba(36,42,96,.14) 1.5px, transparent 1.9px);
+}
+.lg-deco{
+  position:absolute; display:block; color:var(--accent, #2fd8c4); opacity:.15;
+  transform:rotate(var(--rot,0deg)); animation:lgFloat 8s ease-in-out infinite;
+}
+html:root[data-theme="light"] .lg-deco{ opacity:.2; }
+.lg-deco svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+@keyframes lgFloat{
+  0%,100%{ transform:translateY(0) rotate(var(--rot,0deg)); }
+  50%{ transform:translateY(-14px) rotate(calc(var(--rot,0deg) + 6deg)); }
+}
+@media (max-width:600px){ .lg-deco:nth-child(n+8){ display:none; } }
+/* se detiene cuando no se ve o no aporta: leyendo, con una ventana abierta o en modo escenario */
+body.song-open .lg-deco, body:has(.modal-veil.open) .lg-deco, body:has(#projVeil.open) .lg-deco{ animation-play-state:paused; }
+body.stage .lg-bg{ display:none; }
+
+/* El panel grande ya no desenfoca lo que hay detrás: es lo más caro de pintar y el fondo es suave.
+   Conserva el cristal con tinte, brillo y borde especular. El desenfoque queda solo en dock, modales y avisos. */
+html:root .app > .panel.glass{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  background:var(--lg-surface), rgba(16,20,48,.46);
+}
+html:root[data-theme="light"] .app > .panel.glass{ background:linear-gradient(160deg, rgba(255,255,255,.62), rgba(255,255,255,.34) 50%, rgba(255,255,255,.5)), rgba(255,255,255,.18); }

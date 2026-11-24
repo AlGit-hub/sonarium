@@ -279,11 +279,43 @@
       .observe(grid, { childList: true });
   }
 
+
+  /* ---- Fondo decorativo (estilo RoboKids) ----
+     Degradados y puntos estáticos + iconos de contorno que solo suben y bajan unos píxeles con transform.
+     Nada de desenfoques animados ni cambios de forma: la GPU lo mueve sin esfuerzo. */
+  var CLEF_D = "M434 2Q464 -103 464 -170Q464 -223 427.0 -257.0Q390 -291 337 -291Q287 -291 250.0 -261.5Q213 -232 213 -190Q213 -160 233.5 -133.5Q254 -107 283.5 -107.0Q313 -107 331.5 -128.5Q350 -150 350 -178Q350 -240 280 -240Q298 -268 338 -268Q353 -268 368.5 -263.5Q384 -259 401.0 -248.0Q418 -237 428.5 -213.5Q439 -190 439 -157Q439 -136 411 -6Q389 -12 356 -12Q259 -12 189.5 60.0Q120 132 120 232Q120 267 131.5 303.0Q143 339 157.5 366.5Q172 394 200.5 428.5Q229 463 248.5 483.5Q268 504 303 539Q280 621 280 689Q280 779 313.0 839.5Q346 900 379 900Q389 900 401.5 887.0Q414 874 426.0 851.0Q438 828 446.5 790.5Q455 753 455 710Q455 551 342 447L368 329Q384 332 397 332Q458 332 500.0 282.5Q542 233 542 162Q542 44 434 2ZM426 746Q426 801 394 801Q358 801 333.0 748.0Q308 695 308 630Q308 588 321 557Q359 580 392.5 639.5Q426 699 426 746ZM498 128Q498 183 466.0 216.0Q434 249 383 249L428 23Q498 52 498 128ZM407 17 361 247Q334 241 311.5 214.0Q289 187 289 158Q289 143 295.0 128.5Q301 114 309.5 104.0Q318 94 327.0 86.0Q336 78 342.0 74.5Q348 71 348 71L340 66Q307 75 277.5 106.0Q248 137 248 184Q248 231 277.5 270.5Q307 310 343 323L325 430Q168 299 168 177Q168 104 223.0 55.0Q278 6 348 6Q365 6 407 17Z";
+  var BGI = {
+    clef:'<g transform="scale(1 -1)"><path fill="currentColor" stroke="none" d="'+CLEF_D+'"/></g>',
+    notes:P.notes, note:I.note, guitar:P.guitar, mic:I.mic, metro:I.metro, sparkle:P.sparkle,
+    headphones:'<path d="M4 15v-3a8 8 0 0 1 16 0v3M4 15h3v5H5.5A1.5 1.5 0 0 1 4 18.5zM20 15h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z"/>',
+    piano:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7.5 6v12M12 6v12M16.5 6v12M6 6v6.5M9 6v6.5M15 6v6.5M18 6v6.5"/>',
+    book:'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/>'
+  };
+  // [icono, izquierda %, arriba %, tamaño px, giro °, retraso s]
+  var BGP = [["clef",6,9,104,-10,0],["notes",86,7,86,10,1.2],["guitar",4,60,104,-18,2.4],["headphones",90,56,92,8,.6],
+             ["mic",24,84,74,12,3.1],["metro",72,82,82,-8,1.8],["piano",46,5,92,6,2.9],["note",78,30,58,14,2.2],
+             ["sparkle",17,38,46,0,1.4],["book",58,46,70,-10,.9],["sparkle",93,82,44,0,3.6],["note",36,64,54,-14,.3]];
+
+  function buildBg() {
+    if (document.getElementById("lgBg")) return;
+    var bg = document.createElement("div");
+    bg.id = "lgBg"; bg.className = "lg-bg"; bg.setAttribute("aria-hidden", "true");
+    var h = "";
+    BGP.forEach(function (p) {
+      var filled = p[0] === "clef";
+      h += '<span class="lg-deco" style="left:' + p[1] + '%;top:' + p[2] + '%;width:' + p[3] + 'px;height:' + p[3] + 'px;--rot:' + p[4] + 'deg;animation-delay:' + p[5] + 's">' +
+           '<svg viewBox="' + (filled ? "90 -930 482 1251" : "0 0 24 24") + '"' + (filled ? ' preserveAspectRatio="xMidYMid meet"' : "") + ">" + BGI[p[0]] + "</svg></span>";
+    });
+    bg.innerHTML = h;
+    document.body.insertBefore(bg, document.body.firstChild);
+  }
+
   function init() {
     scan();
     fixGreeting();
     watchIcons();
     zoomNav();
+    buildBg();
     var gEl = document.getElementById("greeting");
     if (gEl) new MutationObserver(fixGreeting).observe(gEl, { childList: true, characterData: true, subtree: true });
     // pestañas que se crean después (p. ej. el modal de cuenta vuelve a dibujar su HTML)

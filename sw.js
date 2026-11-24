@@ -4,12 +4,12 @@
    - Los archivos del código (app.js, styles.css) también van red primero, para que nunca se mezclen versiones.
    - Iconos, manifest y tipografías se guardan para abrir rápido y sin conexión.
    - Firebase/Firestore y cualquier otra petición no se tocan. */
-const VERSION = "sonarium-v15";
+const VERSION = "sonarium-v16";
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
 self.addEventListener("install", (e) => {
   // se guarda cada archivo por separado: si alguno falta, los demás igual quedan
-  const files = ["./", "index.html", "styles.css?v=9", "liquid.css?v=7", "app.js?v=7", "liquid.js?v=4", "terminos.html", "manifest.webmanifest", "favicon.svg?v=3", "favicon-192.png", "apple-touch-icon.png"];
+  const files = ["./", "index.html", "styles.css?v=9", "liquid.css?v=8", "app.js?v=8", "liquid.js?v=5", "terminos.html", "manifest.webmanifest", "favicon.svg?v=3", "favicon-192.png", "apple-touch-icon.png"];
   e.waitUntil(
     caches.open(VERSION)
       .then((c) => Promise.allSettled(files.map((u) => fetch(new Request(u, { cache: "reload" })).then((r) => { if (r.ok) return c.put(u, r); }))))

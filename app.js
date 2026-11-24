@@ -1773,9 +1773,7 @@ service cloud.firestore {
     if(/iphone|ipad|ipod/i.test(navigator.userAgent)) return '<div class="hint" style="margin-top:6px;">📲 Para instalar: toca Compartir y luego «Agregar a pantalla de inicio».</div>';
     return "";
   }
-  function liteRow(){
-    return '<label class="check-inline"><input type="checkbox" id="accLite"' + (document.body.classList.contains("lite") ? " checked" : "") + '> Modo ligero (menos efectos, más fluido)</label>';
-  }
+  function liteRow(){ return ""; }   // el Modo ligero ya no existe: el diseño es liviano por sí mismo
 
   async function onAccSubmit(){
     if(acc.busy) return;
@@ -3359,33 +3357,9 @@ service cloud.firestore {
     }
   })();
 
-  /* ---------------- modo ligero automático ---------------- */
-  (function autoLite(){
-    // si la persona eligió (en su cuenta) activar o desactivar el modo ligero, se respeta sin medir
-    let lp = null;
-    try{ lp = localStorage.getItem("sonarium.ligero"); }catch(e){}
-    if(lp === "on") document.body.classList.add("lite");
-    if(lp === "on" || lp === "off") return;
-    setTimeout(() => {
-      if(document.hidden || !window.requestAnimationFrame) return;
-      let n = 0, t0 = 0, aborted = false;
-      const onVis = () => { aborted = true; };
-      document.addEventListener("visibilitychange", onVis, { once:true });
-      const f = (t) => {
-        if(aborted) return;
-        if(!t0) t0 = t;
-        n++;
-        if(t - t0 < 2000) return requestAnimationFrame(f);
-        document.removeEventListener("visibilitychange", onVis);
-        const fps = n / ((t - t0) / 1000);
-        if(fps < 40 && !document.body.classList.contains("lite")){
-          document.body.classList.add("lite");
-          toast("Modo ligero activado para que todo se mueva más fluido");
-        }
-      };
-      requestAnimationFrame(f);
-    }, 4600);
-  })();
+  /* ---------------- modo ligero: eliminado ----------------
+     Si el navegador guardó antes una preferencia "sonarium.ligero", se borra para no dejar rastro. */
+  (function(){ try{ localStorage.removeItem("sonarium.ligero"); }catch(e){} document.body.classList.remove("lite"); })();
 
   /* ---------------- canción abierta desde un espacio: anterior / siguiente / volver ---------------- */
   function spaceList(){
