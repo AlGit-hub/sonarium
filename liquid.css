@@ -281,7 +281,7 @@ html:root[data-theme="light"] .lyrics-area{ color:#171b38; }
 
 /* ---------- Entrada suave de la lista ---------- */
 @keyframes lgPop{ from{ opacity:0; transform:translateY(14px) scale(.96); } to{ opacity:1; transform:none; } }
-html:root .song-grid .card{ animation:lgPop .6s var(--spring) both; }
+html:root .song-grid .card:nth-child(-n+16){ animation:lgPop .6s var(--spring) backwards; }  /* solo las primeras; 'backwards' libera la capa al terminar */
 
 /* ---------- Refracción de lente (#lgLens): solo docks y modales, y solo si el navegador la soporta ---------- */
 html[data-lens="1"]:root .mobile-dock,
@@ -454,7 +454,7 @@ html:root[data-theme="light"] .lg-deco{ opacity:.2; }
 }
 @media (max-width:600px){ .lg-deco:nth-child(n+8){ display:none; } }
 /* se detiene cuando no se ve o no aporta: leyendo, con una ventana abierta o en modo escenario */
-body.song-open .lg-deco, body:has(.modal-veil.open) .lg-deco, body:has(#projVeil.open) .lg-deco{ animation-play-state:paused; }
+body.song-open .lg-deco, body.lg-modal .lg-deco{ animation-play-state:paused; }
 body.stage .lg-bg{ display:none; }
 
 /* El panel grande ya no desenfoca lo que hay detrás: es lo más caro de pintar y el fondo es suave.
@@ -464,3 +464,30 @@ html:root .app > .panel.glass{
   background:var(--lg-surface), rgba(16,20,48,.46);
 }
 html:root[data-theme="light"] .app > .panel.glass{ background:linear-gradient(160deg, rgba(255,255,255,.62), rgba(255,255,255,.34) 50%, rgba(255,255,255,.5)), rgba(255,255,255,.18); }
+
+/* ==========================================================================
+   RENDIMIENTO · desenfoque solo donde cuenta
+   Antes había cientos de capas con backdrop-filter (botones de cada tarjeta, campos, selectores,
+   18 ventanas ocultas...). Ahora: todo en cero y se reactiva únicamente en superficies grandes,
+   pocas y visibles. El panel del inicio y las tarjetas no desenfocan.
+   ========================================================================== */
+html:root body *{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+
+html:root .mobile-dock, html:root .scrollbar-dock, html:root .space-nav,
+html:root .side-inner, html:root .chord-pop, html:root .tour-card, html:root #toast.show{
+  -webkit-backdrop-filter:blur(22px) saturate(1.7) !important; backdrop-filter:blur(22px) saturate(1.7) !important;
+}
+/* fondo de las ventanas: solo cuando están abiertas (un único desenfoque de pantalla, sin anidar) */
+html:root .modal-veil.open{
+  -webkit-backdrop-filter:blur(8px) saturate(1.25) !important; backdrop-filter:blur(8px) saturate(1.25) !important;
+}
+/* la ventana en sí es casi opaca: no necesita desenfoque ni refracción propios */
+
+/* la refracción de lente (#lgLens) es muy cara: solo en el dock flotante móvil, donde no hay contenido moviéndose detrás */
+html[data-lens="1"]:root .mobile-dock{
+  -webkit-backdrop-filter:url(#lgLens) blur(6px) saturate(1.7) !important; backdrop-filter:url(#lgLens) blur(6px) saturate(1.7) !important;
+}
+
+/* tarjetas: sombra más corta (191 sombras de 44 px eran muy caras de pintar) */
+html:root .card:not(.add-card){ box-shadow:var(--lg-inner), 0 10px 22px -14px rgba(0,0,0,.55); }
+html:root[data-theme="light"] .card:not(.add-card){ box-shadow:var(--lg-inner), 0 10px 22px -14px rgba(40,50,120,.32); }

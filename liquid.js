@@ -310,12 +310,23 @@
     document.body.insertBefore(bg, document.body.firstChild);
   }
 
+
+  /* ---- Marca en <body> cuando hay una ventana abierta (pausa el fondo sin usar :has) ---- */
+  function watchModals() {
+    var veils = document.querySelectorAll(".modal-veil");
+    function sync() { document.body.classList.toggle("lg-modal", !!document.querySelector(".modal-veil.open")); }
+    var mo = new MutationObserver(sync);
+    veils.forEach(function (v) { mo.observe(v, { attributes: true, attributeFilter: ["class"] }); });
+    sync();
+  }
+
   function init() {
     scan();
     fixGreeting();
     watchIcons();
     zoomNav();
     buildBg();
+    watchModals();
     var gEl = document.getElementById("greeting");
     if (gEl) new MutationObserver(fixGreeting).observe(gEl, { childList: true, characterData: true, subtree: true });
     // pestañas que se crean después (p. ej. el modal de cuenta vuelve a dibujar su HTML)
