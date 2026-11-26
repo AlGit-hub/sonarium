@@ -415,7 +415,6 @@ html:root #splash{ transition:opacity .8s ease, transform .95s var(--spring-soft
 .lg-ghost{
   position:fixed; z-index:60; pointer-events:none; will-change:transform, opacity;
   background:var(--lg-surface-strong); box-shadow:var(--lg-inner), var(--lg-drop);
-  -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
 }
 /* mientras la carpeta se amplía, las tarjetas no hacen su entrada en cascada (sería doble animación) */
 html:root #songGrid.lg-zoom .card{ animation:none; }

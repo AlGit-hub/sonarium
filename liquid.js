@@ -264,7 +264,10 @@
         { transform: "translate(" + tx + "px," + ty + "px) scale(" + s + ")", opacity: 0, borderRadius: (24 / s) + "px" }
       ], { duration: 460, easing: "cubic-bezier(.32,.72,0,1)" });
       a.onfinish = a.oncancel = function () { g.remove(); };
-      home.animate([{ transform: "scale(1.045)", opacity: 0.55 }, { transform: "none", opacity: 1 }], { duration: 560, easing: ease() });
+      // las tarjetas no repiten su entrada mientras se cierra (si no, se pisan dos animaciones y se siente lento)
+      grid.classList.add("lg-zoom");
+      setTimeout(function () { grid.classList.remove("lg-zoom"); }, 620);
+      home.animate([{ transform: "scale(1.02)", opacity: 0.6 }, { transform: "none", opacity: 1 }], { duration: 460, easing: "cubic-bezier(.32,.72,0,1)" });
       origin = null; songRect = null;
     }
 
