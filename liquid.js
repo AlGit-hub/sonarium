@@ -320,6 +320,20 @@
     sync();
   }
 
+  /* Animación al tocar: marca el botón con [data-pop] ~0.7 s; el CSS decide cuál */
+  function popOnTap() {
+    var SEL = "button, .card .fav, .chord-tag, .fchip, .space-chip, .a-chip, .choice-opt, .pick-item, .tab, .tt, .lt";
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest(SEL);
+      if (!b || b.disabled) return;
+      b.removeAttribute("data-pop");
+      void b.offsetWidth;
+      b.setAttribute("data-pop", "1");
+      clearTimeout(b.__pt);
+      b.__pt = setTimeout(function () { b.removeAttribute("data-pop"); }, 750);
+    }, true);
+  }
+
   function init() {
     scan();
     fixGreeting();
@@ -327,6 +341,7 @@
     zoomNav();
     buildBg();
     watchModals();
+    popOnTap();
     var gEl = document.getElementById("greeting");
     if (gEl) new MutationObserver(fixGreeting).observe(gEl, { childList: true, characterData: true, subtree: true });
     // pestañas que se crean después (p. ej. el modal de cuenta vuelve a dibujar su HTML)

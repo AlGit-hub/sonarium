@@ -2,6 +2,7 @@
   "name": "Sonarium",
   "short_name": "Sonarium",
   "description": "Tu cancionero con acordes, carpetas y espacios temporales",
+  "id": "https://www.sonarium.lat/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

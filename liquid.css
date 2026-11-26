@@ -491,3 +491,62 @@ html[data-lens="1"]:root .mobile-dock{
 /* tarjetas: sombra más corta (191 sombras de 44 px eran muy caras de pintar) */
 html:root .card:not(.add-card){ box-shadow:var(--lg-inner), 0 10px 22px -14px rgba(0,0,0,.55); }
 html:root[data-theme="light"] .card:not(.add-card){ box-shadow:var(--lg-inner), 0 10px 22px -14px rgba(40,50,120,.32); }
+
+/* ═════════ ANIMACIONES CUTE · cada botón con su gracia ═════════
+   Solo transform/opacity (GPU). Corren al tocar, sin bucles. JS pone [data-pop] ~0.7s. */
+@keyframes lgBeat{0%{transform:scale(1)}30%{transform:scale(1.35)}55%{transform:scale(.92)}75%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes lgStar{0%{transform:scale(1) rotate(0)}35%{transform:scale(1.6) rotate(72deg)}65%{transform:scale(.88) rotate(-14deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes lgHop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(1px) scale(1.12,.86)}50%{transform:translateY(-6px) scale(.94,1.1)}75%{transform:translateY(1px) scale(1.06,.94)}100%{transform:translateY(0) scale(1,1)}}
+@keyframes lgUp{0%{transform:translateY(0)}35%{transform:translateY(-7px) scale(1.15)}65%{transform:translateY(2px)}100%{transform:translateY(0)}}
+@keyframes lgDown{0%{transform:translateY(0)}35%{transform:translateY(7px) scale(1.15)}65%{transform:translateY(-2px)}100%{transform:translateY(0)}}
+@keyframes lgNudgeL{0%{transform:translateX(0)}35%{transform:translateX(-7px)}70%{transform:translateX(2px)}100%{transform:translateX(0)}}
+@keyframes lgNudgeR{0%{transform:translateX(0)}35%{transform:translateX(7px)}70%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+@keyframes lgShake{0%,100%{transform:rotate(0)}15%{transform:rotate(-16deg)}35%{transform:rotate(14deg)}55%{transform:rotate(-9deg)}75%{transform:rotate(5deg)}}
+@keyframes lgSwing{0%,100%{transform:rotate(0)}25%{transform:rotate(22deg)}60%{transform:rotate(-18deg)}85%{transform:rotate(6deg)}}
+@keyframes lgSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes lgTwist{0%{transform:rotate(0)}40%{transform:rotate(90deg) scale(1.15)}100%{transform:rotate(90deg) scale(1)}}
+@keyframes lgWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg) scale(1.1)}60%{transform:rotate(8deg) scale(1.05)}}
+@keyframes lgRing{0%{transform:scale(.6);opacity:.55}100%{transform:scale(1.9);opacity:0}}
+@keyframes lgFloatNote{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}
+@keyframes lgChordPop{0%{transform:scale(1)}40%{transform:scale(1.22) translateY(-2px)}100%{transform:scale(1)}}
+
+/* por defecto: salto suave del ícono */
+html:root [data-pop] > .lg-ic, html:root [data-pop].lg-ic{ animation:lgHop .6s var(--spring) both; transform-origin:50% 60%; }
+/* personalidades */
+html:root :is(#favBtn,.fav)[data-pop] .lg-ic,
+html:root :is(#favBtn,.fav)[data-pop]{ animation:none; }
+html:root :is(#favBtn,.fav)[data-pop] .lg-ic{ animation:lgStar .65s var(--spring) both; }
+html:root :is(#playBtn,#stPlay,#metroGo,#tunerGo,#tapBtn,#metroPill)[data-pop] .lg-ic{ animation:lgBeat .6s var(--spring) both; }
+html:root :is(#transposeUp,#fontUp,#capoUp,#bpmUp)[data-pop] .lg-ic,
+html:root :is(#transposeUp,#fontUp,#capoUp,#bpmUp)[data-pop]{ animation:lgUp .5s var(--spring) both; }
+html:root :is(#transposeDown,#fontDown,#capoDown,#bpmDown)[data-pop] .lg-ic,
+html:root :is(#transposeDown,#fontDown,#capoDown,#bpmDown)[data-pop]{ animation:lgDown .5s var(--spring) both; }
+html:root :is(#backBtn,#spBack,#spPrev,#homeBtn)[data-pop] .lg-ic{ animation:lgNudgeL .5s var(--spring) both; }
+html:root :is(#spNext)[data-pop] .lg-ic{ animation:lgNudgeR .5s var(--spring) both; }
+html:root :is(#deleteBtn,#mobileTrash,#trashToggle,.card-actions .danger)[data-pop] .lg-ic{ animation:lgShake .6s ease-out both; transform-origin:50% 20%; }
+html:root :is(#themeBtn,#mobileTheme)[data-pop] .lg-ic{ animation:lgSpin .7s var(--spring-soft) both; }
+html:root :is(#toolsBtn,#toolsHomeBtn,#mobileTools,#editBtn,#backupBtn,#backupNow)[data-pop] .lg-ic{ animation:lgSwing .65s ease-out both; }
+html:root :is(#closeModal,#closeConfirm,#closeTrash,#libClose,#backupClose,#histClose,#moreClose,#toolsClose,#shareClose,.cp-x)[data-pop] .lg-ic{ animation:lgTwist .45s var(--spring) both; }
+html:root :is(#exportBtn,#importBtn,#pdfBtn,#shareBtn,#mobileExport,#mobileImport,#mobilePdf)[data-pop] .lg-ic{ animation:lgHop .6s var(--spring) both; }
+html:root :is(#newSongBtn,#sideNewSong,#mobileNewSong,#newFolderBtn,#newSpaceBtn,#saveModal,#libOk)[data-pop] .lg-ic{ animation:lgSpin .55s var(--spring) both; }
+html:root :is(#chordsBtn,#notaBtn,#viewBtn,#mobileView,#stageBtn,#projBtn,#sortSel)[data-pop] .lg-ic{ animation:lgWiggle .55s ease-out both; }
+/* acordes tocables */
+html:root .chord-tag[data-pop]{ animation:lgChordPop .4s var(--spring) both; }
+/* pastillas y chips: pop pequeño */
+html:root :is(.fchip,.space-chip,.a-chip,.choice-opt,.pick-item,.tab,.tt,.lt)[data-pop]{ animation:lgChordPop .4s var(--spring) both; }
+/* tarjetas: levantan al pasar el cursor (solo equipos con ratón) */
+@media (hover:hover) and (pointer:fine){
+  html:root .song-grid .card:not(.add-card){ transition:transform .45s var(--spring), box-shadow .3s ease; }
+  html:root .song-grid .card:not(.add-card):hover{ transform:translateY(-4px) scale(1.012); }
+  html:root .glass-btn:hover .lg-ic, html:root .mobile-dock button:hover .lg-ic{ transform:scale(1.12); transition:transform .35s var(--spring); }
+}
+/* estado vacío: nota flotante */
+html:root .empty-hint::before{ content:"♪"; display:block; font-size:2rem; opacity:.7; width:max-content; margin:0 auto .4rem; animation:lgFloatNote 3.2s ease-in-out infinite; }
+html:root body.song-open .empty-hint::before, html:root body.lg-modal .empty-hint::before{ animation-play-state:paused; }
+/* movimiento reducido: nada de esto */
+html:root[data-motion="reduced"] [data-pop], html:root[data-motion="reduced"] [data-pop] *, html:root[data-motion="reduced"] .empty-hint::before{ animation:none !important; }
+@media (prefers-reduced-motion:reduce){ html:root:not([data-motion="full"]) [data-pop], html:root:not([data-motion="full"]) [data-pop] *{ animation:none !important; } }
+
+/* ═════════ Tipografía tierna · Fraunces con puntas redondeadas (eje SOFT) ═════════ */
+html:root :is(.home-header .greet h1, .topbar h2, .modal-head h3, .card .t, .tour-card h4, .sh-title, .start-card h2, #splash .brand-name, .pr-song h2){
+  font-variation-settings:"SOFT" 100, "WONK" 1; font-optical-sizing:auto; }
