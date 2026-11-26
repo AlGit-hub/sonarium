@@ -1627,6 +1627,8 @@ service cloud.firestore {
       const r192 = avatarSquare(a, 192, true), r512 = avatarSquare(a, 512, true);   // circulares para "any"
       if(touch) touch.setAttribute("href", i180);
       else if(!dyn){ const l = document.createElement("link"); l.rel = "apple-touch-icon"; l.id = "dynApple"; l.href = i180; document.head.appendChild(l); }
+      // El manifest se deja estático: reemplazarlo por un blob (al iniciar sesión) impide que Chrome ofrezca «Instalar» y deja solo el acceso directo.
+      return;
       if(!man) return;
       if(!appIcon.baseManifest){
         try{ const r = await fetch(appIcon.manifestHref, { cache:"no-cache" }); appIcon.baseManifest = r.ok ? await r.json() : {}; }
