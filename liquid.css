@@ -549,3 +549,9 @@ html:root[data-motion="reduced"] [data-pop], html:root[data-motion="reduced"] [d
 /* ═════════ Tipografía tierna · Fraunces con puntas redondeadas (eje SOFT) ═════════ */
 html:root :is(.home-header .greet h1, .topbar h2, .modal-head h3, .card .t, .tour-card h4, .sh-title, .start-card h2, #splash .brand-name, .pr-song h2){
   font-variation-settings:"SOFT" 100, "WONK" 1; font-optical-sizing:auto; }
+
+/* ═════════ Cierre sin congelamiento: no se pinta lo que está fuera de pantalla ═════════ */
+html:root .song-grid .card:not(.add-card){ content-visibility:auto; contain-intrinsic-size:auto 250px; }
+html:root .song-grid.list .card:not(.add-card){ contain-intrinsic-size:auto 78px; }
+html:root .card:not(.add-card){ box-shadow:var(--lg-inner), 0 6px 12px -9px rgba(0,0,0,.5); }
+html:root[data-theme="light"] .card:not(.add-card){ box-shadow:var(--lg-inner), 0 6px 12px -9px rgba(40,50,120,.3); }

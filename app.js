@@ -1065,8 +1065,13 @@ service cloud.firestore {
       }
     }
     if(!q && loc.type !== "space") html += quoteHtml();
-    el.songGrid.innerHTML = html;
-    if(animate){
+    // Si el HTML es idéntico al anterior (p. ej. al volver de una canción sin cambios) no se reconstruyen
+    // cientos de tarjetas: ahorra el congelamiento justo antes de la animación de regreso.
+    const same = el.songGrid.__html === html && el.songGrid.childElementCount > 0;
+    if(!same){ el.songGrid.innerHTML = html; el.songGrid.__html = html; }
+    if(same){
+      /* sin cambios: se deja el DOM tal cual */
+    } else if(animate){
       el.songGrid.classList.remove("enter"); void el.songGrid.offsetWidth; el.songGrid.classList.add("enter");
     } else {
       el.songGrid.classList.remove("enter");
