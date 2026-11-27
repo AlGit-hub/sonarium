@@ -4,7 +4,7 @@
    - Los archivos del código (app.js, styles.css) también van red primero, para que nunca se mezclen versiones.
    - Iconos, manifest y tipografías se guardan para abrir rápido y sin conexión.
    - Firebase/Firestore y cualquier otra petición no se tocan. */
-const VERSION = "sonarium-v23";
+const VERSION = "sonarium-v24";
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
 self.addEventListener("install", (e) => {
