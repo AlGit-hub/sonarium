@@ -664,7 +664,12 @@ service cloud.firestore {
     if(n === -1) n = FLATS.indexOf(note);
     return n;
   }
+  // Acordes escritos en notación latina («Re/Fa#», «Sol», «Sib») → letras (D/F#, G, Bb). «Fadd9»/«Faug» son inglés y se respetan.
+  function esToEn(chord){
+    return String(chord).replace(/(^|\/)(Sol|Do|Re|Mi|Fa(?!dd|ug)|La|Si)/g, (m, p, n) => p + ES_ROOTS[n.toLowerCase()]);
+  }
   function transposeChord(chord, shift){
+    chord = esToEn(chord);
     if(!shift) return chord;
     return chord.split("/").map(part => transposeSingle(part, shift)).join("/");
   }
@@ -688,7 +693,7 @@ service cloud.firestore {
   function useLatin(){ try{ return localStorage.getItem("sonarium.notacion") === "latin"; }catch(e){ return false; } }
   function toNotation(ch){
     if(!useLatin() || !ch) return ch;
-    return String(ch).replace(/(^|\/)([A-G])/g, (m, p, n) => p + NOTE_ES[n]);
+    return esToEn(ch).replace(/(^|\/)([A-G])/g, (m, p, n) => p + NOTE_ES[n]);
   }
   function shiftKeyLabel(key, shift){
     if(!key) return "";

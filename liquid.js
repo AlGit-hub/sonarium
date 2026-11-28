@@ -245,29 +245,12 @@
       a.onfinish = a.oncancel = function () { grid.classList.remove("lg-zoom"); };
     }
 
-    // ---- volver: lámina de cristal que se encoge hacia la tarjeta + inicio que se acomoda ----
+    // ---- volver: solo un fundido suave del inicio (sin lámina ni escala: no pesa nada) ----
     function closeZoom() {
       if (!motionOK() || !songRect) return;
-      var g = document.createElement("div");
-      g.className = "lg-ghost";
-      g.style.cssText = "left:" + songRect.left + "px;top:" + songRect.top + "px;width:" + songRect.width + "px;height:" + songRect.height + "px";
-      document.body.appendChild(g);
-      var tx, ty, s;
-      if (origin) {
-        s = Math.max(origin.width / songRect.width, 0.1);
-        tx = origin.left + origin.width / 2 - (songRect.left + songRect.width / 2);
-        ty = origin.top + origin.height / 2 - (songRect.top + songRect.height / 2);
-      } else { s = 0.3; tx = 0; ty = 0; }
-      var a = g.animate([
-        { transform: "none", opacity: 0.9, borderRadius: "0px" },
-        { opacity: 0.9, offset: 0.55 },
-        { transform: "translate(" + tx + "px," + ty + "px) scale(" + s + ")", opacity: 0, borderRadius: (24 / s) + "px" }
-      ], { duration: 460, easing: "cubic-bezier(.32,.72,0,1)" });
-      a.onfinish = a.oncancel = function () { g.remove(); };
-      // las tarjetas no repiten su entrada mientras se cierra (si no, se pisan dos animaciones y se siente lento)
-      grid.classList.add("lg-zoom");
-      setTimeout(function () { grid.classList.remove("lg-zoom"); }, 620);
-      home.animate([{ transform: "scale(1.02)", opacity: 0.6 }, { transform: "none", opacity: 1 }], { duration: 460, easing: "cubic-bezier(.32,.72,0,1)" });
+      grid.classList.add("lg-zoom");   // las tarjetas no repiten su entrada
+      setTimeout(function () { grid.classList.remove("lg-zoom"); }, 400);
+      home.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 240, easing: "ease-out" });
       origin = null; songRect = null;
     }
 
